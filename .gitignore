@@ -1,0 +1,25 @@
+# Claude Code session state
+.claude/
+
+# Lean build output and downloaded dependencies (Mathlib is fetched by `lake`)
+lean/.lake/
+lean/Audit.lean
+
+# Python
+__pycache__/
+*.pyc
+
+# Raw Lichess dump (CC0, download from https://database.lichess.org)
+experiments/data/lichess/
+
+# LaTeX intermediates
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.toc
+
+# arXiv bundle is attached to GitHub releases instead
+arxiv/

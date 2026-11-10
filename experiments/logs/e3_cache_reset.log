@@ -1,0 +1,26 @@
+games_lichess/eager SF {'cols': 1611565, 'mcols': 0, 'passes': 422092, 'evals': 202984, 'builds': 405968} {'finny': 28250, 'chain': 369656, 'hybrid': 8062} 19.4
+games_lichess/eager SFmin {'cols': 1512718, 'mcols': 0, 'passes': 405968, 'evals': 202984, 'builds': 405968} {'refresh': 33583, 'chain': 369656, 'finny': 2729} 16.0
+games_lichess/eager VN_noC4 {'cols': 1512330, 'mcols': 0, 'passes': 405968, 'evals': 202984, 'builds': 405968} {'refresh': 33582, 'chain': 369343, 'finny': 3043} 15.2
+games_lichess/eager VN {'cols': 1512245, 'mcols': 0, 'passes': 405968, 'evals': 202984, 'builds': 405968} {'refresh': 33531, 'chain': 369343, 'ancestor': 61, 'finny': 3033} 17.0
+games_lichess/eager C2 4 1.0 2 0.5976516335633411 {'cols': 1245531, 'mcols': 125416, 'passes': 405968, 'evals': 202984, 'builds': 405968} 17.5
+games_lichess/eager C2 16 1.0 1 0.31028172772673557 {'cols': 1331872, 'mcols': 130224, 'passes': 405968, 'evals': 202984, 'builds': 405968} 19.2
+games_lichess/eager C2 16 1.0 2 0.0 {'cols': 1512245, 'mcols': 0, 'passes': 405968, 'evals': 202984, 'builds': 405968} 19.2
+games_selfplay/eager SF {'cols': 18744, 'mcols': 0, 'passes': 5130, 'evals': 2440, 'builds': 4880} {'finny': 394, 'chain': 4361, 'hybrid': 125} 0.2
+games_selfplay/eager SFmin {'cols': 17309, 'mcols': 0, 'passes': 4880, 'evals': 2440, 'builds': 4880} {'refresh': 393, 'chain': 4361, 'finny': 126} 0.2
+games_selfplay/eager VN_noC4 {'cols': 17302, 'mcols': 0, 'passes': 4880, 'evals': 2440, 'builds': 4880} {'refresh': 393, 'chain': 4356, 'finny': 131} 0.2
+games_selfplay/eager VN {'cols': 17300, 'mcols': 0, 'passes': 4880, 'evals': 2440, 'builds': 4880} {'refresh': 392, 'chain': 4357, 'finny': 130, 'ancestor': 1} 0.2
+trees/eager SF {'cols': 2153587, 'mcols': 0, 'passes': 813460, 'evals': 389664, 'builds': 779328} {'finny': 35438, 'chain': 726824, 'hybrid': 17066} 32.2
+trees/eager SFmin {'cols': 2106196, 'mcols': 0, 'passes': 779328, 'evals': 389664, 'builds': 779328} {'refresh': 3690, 'chain': 726824, 'finny': 48814} 37.6
+trees/eager VN_noC4 {'cols': 2104153, 'mcols': 0, 'passes': 779328, 'evals': 389664, 'builds': 779328} {'refresh': 3690, 'chain': 724034, 'finny': 51604} 35.3
+trees/eager VN {'cols': 2106360, 'mcols': 0, 'passes': 779328, 'evals': 389664, 'builds': 779328} {'refresh': 3667, 'chain': 724037, 'finny': 51489, 'ancestor': 135} 33.5
+trees/eager C2 4 1.0 2 0.6143952762318448 {'cols': 2053006, 'mcols': 144840, 'passes': 779328, 'evals': 389664, 'builds': 779328} 31.2
+trees/eager C2 16 1.0 1 0.4140762861408986 {'cols': 2065037, 'mcols': 195232, 'passes': 779328, 'evals': 389664, 'builds': 779328} 30.8
+trees/eager C2 16 1.0 2 0.0 {'cols': 2106360, 'mcols': 0, 'passes': 779328, 'evals': 389664, 'builds': 779328} 30.8
+trees/lazy SF {'cols': 2157968, 'mcols': 0, 'passes': 794786, 'evals': 373380, 'builds': 746760} {'finny': 72998, 'chain': 660144, 'hybrid': 13618} 24.3
+trees/lazy SFmin {'cols': 2117418, 'mcols': 0, 'passes': 767550, 'evals': 373380, 'builds': 746760} {'refresh': 3718, 'chain': 660144, 'finny': 82898} 23.1
+trees/lazy VN_noC4 {'cols': 2169745, 'mcols': 0, 'passes': 760153, 'evals': 373380, 'builds': 746760} {'refresh': 3760, 'finny': 154701, 'chain': 588299} 27.5
+trees/lazy VN {'cols': 2625950, 'mcols': 0, 'passes': 746760, 'evals': 373380, 'builds': 746760} {'refresh': 3711, 'finny': 153939, 'chain': 431200, 'ancestor': 157910} 32.6
+trees/lazy C2 4 1.0 2 0.5356102822218227 {'cols': 2640643, 'mcols': 231456, 'passes': 746760, 'evals': 373380, 'builds': 746760} 31.8
+trees/lazy C2 16 1.0 1 0.28250943735394574 {'cols': 2625639, 'mcols': 235184, 'passes': 746760, 'evals': 373380, 'builds': 746760} 39.3
+trees/lazy C2 16 1.0 2 0.0 {'cols': 2625950, 'mcols': 0, 'passes': 746760, 'evals': 373380, 'builds': 746760} 45.7
+done 632.759069442749

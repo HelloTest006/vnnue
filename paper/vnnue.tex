@@ -1,0 +1,484 @@
+\documentclass[10pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,longtable,array,tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=green!40!black,urlcolor=blue!60!black]{hyperref}
+
+\def\UrlBreaks{\do\.\do\_\do\/\do\-}
+\DeclareUrlCommand\lean{\urlstyle{tt}}
+\newcommand{\lnm}[1]{\lean{VNNUE.#1}}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Zm}[1]{\Z/2^{#1}}
+\newcommand{\one}{\mathbf{1}}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\colops}{colOps}
+\DeclareMathOperator{\dec}{dec_{16}}
+\DeclareMathOperator{\satop}{sat_{16}}
+\DeclareMathOperator{\fold}{fold}
+\DeclareMathOperator{\canon}{canon}
+\DeclareMathOperator{\clamp}{clamp}
+\newcommand{\accV}{\mathrm{acc}^{V}}
+\newcommand{\accS}{\mathrm{acc}^{S}}
+\newcommand{\psum}{p}
+\newcommand{\symd}{\mathbin{\triangle}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\leanref}[1]{\par\smallskip{\raggedright\noindent\upshape\textit{Lean:} #1.\par}}
+\newcommand{\hd}[1]{\begin{tabular}[b]{@{}c@{}}#1\end{tabular}}
+\Urlmuskip=0mu plus 0.5mu
+
+\title{VNNUE: Very Easily Updatable Neural Networks\\[4pt]
+\large An Exact, Formally Verified Update Calculus and a Power-Sum Interaction Channel for Chess Evaluation}
+\author{HelloTest006\thanks{Version of 10 November 2026. Lean proofs, experiment code, derived data, result files and the sources of this paper are available at \url{https://github.com/HelloTest006/vnnue} (directories \texttt{lean/}, \texttt{experiments/}, \texttt{paper/}). Code is released under the MIT license; text and figures under CC~BY~4.0.}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Efficiently updatable neural networks (NNUE) made strong neural evaluation affordable inside alpha-beta chess engines by updating the first layer incrementally on every move.
+We revisit this mechanism as an algebraic object.
+For a fixed weight table (fixed king bucket and material block), the first layer of an NNUE is a group homomorphism $\Z^N\to(\Zm{16})^L$ from the integer feature-delta group into a lane group.
+The \emph{correctness} (not the performance) of incremental updates, Finny-table refreshes, Stockfish's hybrid king update, lazy catch-up and wrap-around integer arithmetic each reduces to an identity of this homomorphism.
+We make these identities explicit and machine-checked, and we use the resulting calculus to design VNNUE, a proposed extension of Stockfish's current K32H3 network.
+
+VNNUE adds three things.
+The first is a small \emph{power-sum interaction} (PSI) channel.
+It is a king-independent, White-absolute accumulator of first and second power sums of a learned embedding, and one copy serves both perspectives.
+By the Newton--Girard identities its pre-shift head values equal exact all-pairs piece$\times$piece interaction sums, i.e.\ a factorization machine; the deployed readout then applies a floor shift and clamps.
+It costs about $2r$ lanes per changed piece and never needs a refresh.
+The second is an exact source-selection policy for accumulator rebuilds whose candidate set contains Stockfish's.
+The third is a set of optional modes: low-rank king transitions, net-delta catch-up, and symmetry-equivariant views.
+
+The correctness, range and cost statements are formalized in Lean~4 with Mathlib as 149 theorem declarations in eight modules.
+The full build succeeds with no \texttt{sorry}, and the axiom audit of all 149 declarations shows only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound} (Appendix~\ref{app:lean}).
+Formalization also caught several errors in our own draft design (listed in Section~\ref{sec:formal-scope}).
+
+A Python prototype confirms bit-exactness on 6,670,640 accumulator-source checks and 7,803,876 PSI, $y$-state and feature-delta checks with 0 mismatches, on subsets of our data (Section~\ref{sec:e1}).
+Under an explicit byte model that charges PSI for its weight columns but not for its own state pass, PSI costs 2.68\% of piece-square column bytes on Lichess games (4.69\% on quiet moves, which meets the proved bound).
+The results are mixed elsewhere.
+The ``never worse than Stockfish'' source selection, proved under a shared cost model, gains almost nothing beyond taking the minimum over Stockfish's own candidates, and the size of that gain depends on our simulator's cache model.
+On lazy toy search traces, greedy net-delta catch-up \emph{increases} whole-trace cost by 20.3\% in columns (9.2\% in FT bytes) relative to the Stockfish-like rule.
+The low-rank king transition never wins in the default configuration ($r_K=16$, correction formed on the fly).
+PSI learns planted pair structure in small training runs but showed no benefit on real-ish labels.
+We make \textbf{no} playing-strength, Elo or speed claim.
+VNNUE is a verified architecture proposal, and we list the engine, training and SPRT experiments that would be needed to evaluate it.
+\end{abstract}
+
+%=====================================================================
+\section{Introduction}
+%=====================================================================
+
+The evaluation function of a chess engine is called millions of times per second, at the leaves and interior nodes of an alpha-beta search tree.
+Since 2020 Stockfish, the leading open-source engine, has used an \emph{efficiently updatable neural network} (NNUE) for this.
+NNUE was introduced for computer shogi by Nasu~\cite{nasu2018} and ported to chess shortly afterwards~\cite{cpwnnue,nnuepytorchdocs}.
+The trick is old and simple.
+The first layer of the network is a linear map applied to a huge, sparse, binary feature vector.
+A move changes only a handful of features, so the first-layer output (the \emph{accumulator}) can be updated by adding and subtracting a few weight columns instead of being recomputed.
+This is exactly how engines have always maintained material and piece-square-table scores and Zobrist hash keys~\cite{zobrist1970}.
+The only difference is that the scalar or bit-string is replaced by a vector of $L=1024$ int16 lanes.
+
+Over six years the Stockfish community has built many engineering refinements around this core.
+King-bucketed feature sets with horizontal mirroring were introduced.
+Refresh caches (``Finny tables'')~\cite{sffinny} (an idea the commit credits to Luecx of the Koivisto engine) reconstruct an accumulator from a cached board diff.
+A hybrid king-move update combines cached entries~\cite{sfsource}.
+Lazy evaluation with catch-up from the last computed ancestor~\cite{sfsource} was added, and two-ply add/remove cancellation~\cite{sfpr5988} followed.
+Threat features~\cite{sfthreats} and pawn-pair features came later, and the accumulators use wrapping int16 SIMD arithmetic~\cite{sfsource}.
+Each refinement is justified informally and tested by self-play.
+None is stated as a theorem.
+
+\paragraph{This paper.}
+We take the algebraic view seriously and ask two questions.
+First, which statements about NNUE-style accumulators are actually true, under which hypotheses?
+Second, can the resulting calculus suggest architecture changes that are ``very easily updatable'', meaning they add expressiveness while keeping the update exact, cheap and refresh-free?
+Our answer is VNNUE, a design built on Stockfish's current K32H3 network.
+We present it with three kinds of evidence of different strength:
+(i)~machine-checked theorems in Lean~4/Mathlib~\cite{demoura2021,mathlib2020};
+(ii)~exact operation and byte counts from a Python prototype driven by real game sequences and toy search trees;
+(iii)~small training sanity checks.
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{An exact update calculus for NNUE accumulators} (Section~\ref{sec:theorems}).
+For a fixed weight table, accumulators are homomorphisms from the feature-delta group $\Z^N$ into an arbitrary abelian group of lanes.
+From this we derive path independence of incremental updates, any-source correctness of refresh caches, the support bound for net deltas, the symmetric-difference metric on cache entries, and exactness of the Stockfish hybrid update.
+These are correctness statements; which mechanism is cheaper is a separate, empirical question.
+Each statement is instantiated at $\Z$ and at $\Zm{16}$ (wrapping int16 lanes).
+\item \textbf{Integer semantics and certificates.}
+Wrapping int16 accumulation decodes exactly whenever the \emph{final} value is in range, whatever happens in between.
+Saturating arithmetic is provably path-dependent.
+Per-lane slot certificates bound lane sums from per-group capacities (the capacities of legal chess positions are an informal input).
+We also prove the \texttt{pmaddubsw} pair-safety bound and the quantized-sum rounding bound.
+\item \textbf{The PSI channel.}
+It is a refresh-free, White-absolute power-sum accumulator that serves both perspectives.
+We prove that its pre-shift head values equal a multi-head factorization machine over all piece pairs (T13), that the halving is exact in integers (T12) and the degree-3 power-sum combination is divisible by~6 (T15), that it is incrementally maintainable (T14), and that the exact state and head sums fit in int16/int32 (T9, T16; the int32 head bias and wrapping $\Zm{32}$ semantics are not covered).
+It is universal given $N^2$ lanes (T17, an existence result that says nothing about $r=32$), and a PSI lane is not affine (T18d: nonzero mixed second difference, whereas every affine function has zero, T18c); applying T18c to K32H3 PSQ lanes at fixed king and block is an informal step.
+\item \textbf{Source selection and optional modes.}
+We specify a min-cost source selection whose candidate set strictly contains Stockfish's \{refresh, Finny, hybrid\}, together with its exact never-worse statement and the modelling assumptions it needs.
+We also give a low-rank king-transition identity and a symmetry framework based on the Klein four-group acting on 768 features, with 192 orbits.
+\item \textbf{A formalization} of 149 theorem declarations (1,907 lines of Lean), all axiom-audited, that compiles against Mathlib v4.35.0 with no \texttt{sorry} (Appendix~\ref{app:lean}).
+\item \textbf{An honest experimental report} (Section~\ref{sec:experiments}) that includes several negative results.
+\end{enumerate}
+
+\paragraph{Scope and what we do \emph{not} claim.}
+VNNUE has not been implemented in a C++ engine, trained at scale, or tested in games.
+We make no claim about Elo, playing strength or nodes per second.
+Most of our theorems are mathematically easy.
+Their value lies in stating the hypotheses exactly (e.g.\ which window a decode is exact on, or which cost function the ``never worse'' guarantee compares), and in the counterexamples that formalization surfaced.
+Several of the design's headline hopes did not survive measurement, and we report these in Sections~\ref{sec:experiments} and~\ref{sec:discussion}.
+
+%=====================================================================
+\section{Background and a century of history}\label{sec:background}
+%=====================================================================
+
+\subsection{Incremental evaluation before NNUE}
+
+Since Shannon~\cite{shannon1950}, chess programs have combined minimax (alpha-beta~\cite{knuth1975}) search with an approximate evaluation function at the leaves.
+Two cheap incremental structures became standard in every engine.
+The first is the \emph{piece-square table} (PST): the evaluation $\sum_{(p,s)\in\text{pos}}T[p][s]$ is linear in the 768-dimensional one-hot vector of (colour, piece, square), so it updates on a move by $E\gets E-T[p][\mathit{from}]+T[p][\mathit{to}]$.
+The second is \emph{Zobrist hashing}~\cite{zobrist1970}: the key $h(\text{pos})=\bigoplus_{f\in\text{pos}}R_f$ is a group homomorphism from feature sets under symmetric difference to $(\Z/2)^{64}$, so it updates by XOR.
+Hand-crafted evaluations also contained explicit pairwise terms, for example the quadratic material-imbalance polynomial in piece counts used by pre-NNUE Stockfish~\cite{sf11}, cf. Kaufman's analysis of material imbalances~\cite{kaufman1999}.
+Neural evaluation long remained too slow for alpha-beta; AlphaZero~\cite{silver2018} instead paired a large network with Monte Carlo tree search.
+
+\subsection{NNUE and its evolution in Stockfish}
+
+Nasu's NNUE~\cite{nasu2018} reconciled neural evaluation with alpha-beta.
+It uses a very wide, sparse, binary input layer (king-relative piece-square features), followed by a small dense network on CPU SIMD integer arithmetic.
+The first-layer output is updated incrementally.
+NNUE entered Stockfish in August 2020 and shipped in Stockfish~12~\cite{cpwnnue}.
+Its subsequent evolution follows our research notes and the cited sources~\cite{nnuepytorchdocs,sfsource,sfreleases}:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item \emph{Feature sets}: HalfKP, then HalfKA/HalfKAv2, then HalfKAv2\_hm with horizontal mirroring (32 king buckets).
+In 2026 these were followed by material-conditioned blocks: K32Q2 (32 own-king buckets $\times$ opponent queen present/absent)~\cite{sfnnv18}, and then K32H3, which has 32 own-king buckets $\times$ 3 material blocks $\times$ 704 piece-squares, giving 67,584 inputs per perspective~\cite{pr563,sfsource}.
+\item \emph{Width}: the first layer grew to $L_1=3072$~\cite{pr5149}.
+Current master is back at $L_1=1024$ with richer inputs: Full Threats (attacker--target pairs~\cite{sfthreats,sfsource}) and pawn-pair features (PP\_3Wide).
+\item \emph{Update machinery}: lazy updates with catch-up from the last computed ancestor~\cite{sfsource}; Finny tables~\cite{sffinny}, which cache per-king-bucket accumulators and rebuild from the board diff; a hybrid update for own-king moves~\cite{sfsource}; two-ply cancellation~\cite{sfpr5988}.
+\item \emph{Quantization}: int16 accumulators with non-saturating (wrapping) SIMD adds, int8 hidden weights, a 0..127 activation range (which, as we observe in T10, also keeps \texttt{pmaddubsw} pair sums below $2^{15}$), threat weights stored as int8 and widened to int16~\cite{nnuepytorchdocs,sfsource}, and quantization-aware training in the most recent releases~\cite{sfreleases}.
+\end{itemize}
+Training is done with nnue-pytorch~\cite{nnuepytorchdocs} or bullet~\cite{bullet}, and changes are accepted by sequential probability ratio tests~\cite{wald1945} on the Fishtest framework~\cite{fishtest}.
+
+\subsection{Mathematical lineage}
+
+VNNUE draws on several well-established lines of mathematics and computer science.
+
+\paragraph{Homomorphisms and finite differencing.}
+A linear map $\Phi$ satisfies $\Phi(x+\delta)=\Phi(x)+\Phi(\delta)$.
+Incremental maintenance of an expression under small input changes is the subject of Paige and Koenig's \emph{finite differencing}~\cite{paige1982}, of self-adjusting computation~\cite{acar2002}, of change theories for higher-order languages~\cite{cai2014}, and of DBSP's algebra of streams over abelian groups~\cite{budiu2023}.
+DBSP's central observation, that linear operators are their own incremental versions and bilinear operators obey a product rule, is exactly what our PSI update rule (Theorem~\ref{thm:t14}) instantiates.
+Delta networks~\cite{neil2017} and DeltaCNN~\cite{parger2022} exploit temporal sparsity in deep networks in the same spirit.
+
+\paragraph{Low-rank corrections.}
+The Sherman--Morrison--Woodbury identities~\cite{sherman1950,woodbury1950} update a matrix inverse under a low-rank change of the matrix.
+We borrow only the base-plus-low-rank-correction pattern, for forward evaluation; our king-transition identity (Theorem~\ref{thm:t23}) is elementary distributivity, in which a rank-$r$ term absorbs the change of king bucket.
+Low-rank adaptation~\cite{hu2022lora} is a modern analogue in deep learning.
+Closest to C2 is nnue-pytorch's \emph{feature factorization}~\cite{nnuepytorchdocs}: king-bucketed weights are trained as $W_\kappa=R_\kappa+Q$ with a shared ``virtual'' piece-square factor $Q$ that is merged into the bucket weights at export.
+C2 restricts the bucket-specific part to rank $r_K$ so that it can be applied incrementally at inference; \lnm{lowrank_generalizes} is the full-rank case of that factorizer.
+
+\paragraph{Power sums and factorization machines.}
+The Newton--Girard identities~\cite{macdonald1995} express elementary symmetric polynomials through power sums.
+For example $2e_2=p_1^2-p_2$ and $6e_3=p_1^3-3p_1p_2+2p_3$.
+Rendle's factorization machines~\cite{rendle2010} use the degree-2 case to compute all pairwise interactions $\sum_{i<j}\langle v_i,v_j\rangle x_ix_j$ in linear time.
+Higher-order FMs~\cite{blondel2016} and CP decompositions~\cite{kolda2009} extend the idea.
+Sum-of-embeddings pooling $\rho(\sum_x\phi(x))$ is the canonical form of permutation-invariant functions on countable domains~\cite{zaheer2017} (power-sum embeddings appear in their proof for the fixed-size case), and a chess position is a set of pieces.
+Pairwise piece interactions are not new in chess evaluation: hand-crafted imbalance tables~\cite{kaufman1999,sf11} are quadratic in piece counts, threat and pawn-pair features are explicit geometric pairs, and Stockfish's FT pairwise product $o_j=u_jv_j$ already forms 512 clipped rank-one quadratic forms per perspective.
+What PSI adds is a parametrization: a refresh-free, unclipped, king-independent power-sum state for square-level pair interactions that complements those terms.
+
+\paragraph{Equivariance.}
+Group-equivariant networks~\cite{cohen2016} and parameter sharing~\cite{ravanbakhsh2017} tie weights so that a group action on inputs becomes a permutation (a representation) on hidden units.
+Stockfish's perspective handling and horizontal mirroring can be viewed as instances of the abstract equivariance statements T21--T22 (Theorems~\ref{thm:t21}--\ref{thm:t22}); the identification with Stockfish's index map is informal.
+
+\paragraph{Integer arithmetic.}
+Integer-only inference~\cite{jacob2018} and classical rounding-error analysis~\cite{higham2002} frame our quantization statements.
+Roofline thinking~\cite{williams2009} explains why bytes per update, not arithmetic, is the right cost unit for accumulator updates.
+Rent-or-buy (ski-rental) competitive analysis~\cite{karlin1988,borodin1998} underlies our appendix lemma on accumulator materialization.
+
+%=====================================================================
+\section{The VNNUE architecture}\label{sec:arch}
+%=====================================================================
+
+\subsection{Baseline and notation}
+
+\paragraph{Baseline.}
+We use Stockfish master as of 9 November 2026, i.e.\ commit \texttt{7cdd5e8} (6 November 2026)~\cite{sfsource}, as the baseline.
+Its PSQ feature set is K32H3, with 67,584 inputs per perspective and at most 32 active.
+The other feature sets are Full Threats and PP\_3Wide.
+The widths are $L_1=1024$, $L_2=32$, $L_3=32$, with 32 layer stacks.
+The feature-transformer (FT) output is the pairwise product $o_j=\lfloor\clamp(a_j,0,255)\cdot\clamp(a_{j+512},0,255)/512\rfloor$, giving 512 values per perspective.
+The PSQ FT table occupies $67{,}584\times1024\times2$\,B $=138.4$\,MB.
+The three blocks (per perspective) are: 0, no rook or queen on the board; 1, some rook or queen, but the opponent has no queen; 2, the opponent has a queen.
+
+\paragraph{Notation.}
+We write $[N]=\{0,\dots,N-1\}$ for feature indices and $[L]$ for lanes; in Lean these are \texttt{Fin N} and \texttt{Fin L}.
+Let $R$ be an abelian group of lane values: $\Z$ for the specification, $\Zm{16}$ for wrapping int16 lanes.
+A weight table is $W:[N]\to R^{L}$, with column $W_i$, and $b\in R^L$ is a bias.
+Then
+\[
+\Phi_W(x)=\sum_{i}x_i\,W_i,\qquad
+\accV(b,W,x)=b+\Phi_W(x),\qquad
+\accS(b,W,S)=b+\sum_{i\in S}W_i,
+\]
+for $x\in\Z^N$ and $S\subseteq[N]$.
+Here $\one_S$ is the indicator of $S$, $\delta(S,T)=\one_T-\one_S$ is the set delta, $\supp\delta=\{i:\delta_i\neq0\}$, and $\colops(S,T)=|S\symd T|$.
+The incremental fold of a list of deltas $\ell=[\delta_1,\dots,\delta_t]$ from an accumulator $a$ is $\fold_W(a,\ell)=(\cdots((a+\Phi_W\delta_1)+\Phi_W\delta_2)\cdots)+\Phi_W\delta_t$.
+The absolute feature set is $\mathfrak A=\{0,1\}\times[6]\times[64]$ (colour, piece type, square), with $|\mathfrak A|=768$.
+The vector $\beta(\text{pos})\in\{0,1\}^{768}$ is White-absolute and has at most 32 ones.
+
+\paragraph{Cost units.}
+\emph{col} is one $L$-wide int16 column add or subtract (2\,KB at $L=1024$).
+\emph{mcol} is one $L$-wide multiply-add column, with cost ratio $\mu\geq1$ to col.
+\emph{pass} is one accumulator load+store, $2\cdot2L$ bytes.
+$k$ is the number of PSQ features changed per perspective: 2 for quiet moves and promotions, 3 for captures, en passant and capture-promotions, 4 for castling.
+$k_a$ is the same count in absolute features.
+It equals $k$ for every move type, including king moves, because absolute features do not depend on the king.
+
+\subsection{Components}
+
+Table~\ref{tab:components} lists the components.
+\textbf{C0} is Stockfish's FT, unchanged.
+The headline configuration is C0+C1+C3+C5, with C3 restricted to sources that do not skip materialization (no ancestor net-delta).
+\textbf{C4} is \emph{off} by default: the specification enabled it, but its whole-trace effect was negative in our experiments (Section~\ref{sec:e3}), so it awaits a reuse-aware policy.
+\textbf{C1$'$}, \textbf{C2}, \textbf{C2$'$} and \textbf{C6} are ablations.
+
+\begin{table}[htbp]
+\centering\small
+\caption{VNNUE components (state per search-stack ply). ``Default'' marks the headline configuration.}\label{tab:components}
+\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\toprule
+Component & Content & Status\\
+\midrule
+C0 FT core & $a_c=b+W_{\mathrm{blk}_c,\kappa_c}x_c+W^T\tau_c+W^P\pi_c\in(\Zm{16})^L$, $c\in\{W,B\}$ & unchanged \\
+C1 PSI & $P1=V\beta\in(\Zm{16})^r$, $P2=V^{\circ2}\beta\in(\Zm{32})^r$, one copy per position & default \\
+C1$'$ PSI deg.~3 & $P1,P2,P3$ for $R$ lanes of $A\in\Z^{R\times768}$, $|A|\le15$ & ablation\\
+C2 king transition & $W_{\mathrm{blk},\kappa}=W^0_{\mathrm{blk}}+U_{\mathrm{blk},\kappa}V_K$ (exact in int16; one $V_K$ shared by all blocks); state $y_c=V_Kx_c$ & optional\\
+C2$'$ factored king & store $W^0+$region term, $U$, $V_K$; evaluate $a_{\text{base}}+U_\kappa y$ at readout & memory experiment\\
+C3 source selection & $\arg\min$ over candidate sources (Table~\ref{tab:sources}) & default\\
+C4 net-delta catch-up & $\Delta=\sum_j\delta_j$ with cancellation, one pass & off (negative result)\\
+C5 certificates & per-lane slot certificates for C0, C1, C1$'$, C2; checked offline & default\\
+C6 symmetry & isotypic threat channel or lane-permutation mirror tying & ablations\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{The PSI channel (C1)}
+
+\paragraph{Parameters and state.}
+The parameters are an embedding $V\in\Z^{r\times768}$ (int8, $|V|\le127$), head weights $\Lambda\in\Z^{m\times r}$ (int8), a head bias $b^z\in\Z^m$ (int32) and shifts $\mathit{sh}_e,\mathit{sh}_z$.
+The defaults are $r=32$ and $m=16$.
+The state is shared between perspectives and White-absolute:
+\[
+P1_t=\sum_iV_{t,i}\beta_i\ \ (\text{int16}),\qquad P2_t=\sum_iV_{t,i}^2\beta_i\ \ (\text{int32}).
+\]
+Both are linear in $\beta$, so they update like NNUE columns.
+They do not depend on king position or material block, so they \emph{never} need a refresh.
+
+\paragraph{Readout (per evaluation, per perspective).}
+\begin{align*}
+E_t&=(P1_t^2-P2_t)/2 &&\text{(exact: $2\mid P1_t^2-P2_t$, Thm.~\ref{thm:t12})}\\
+\hat e_t&=\clamp(-2^{15},2^{15}-1,\;E_t\gg\mathit{sh}_e)&&\text{(int16)}\\
+z_h&=b^z_h+\textstyle\sum_t\Lambda_{h,t}\hat e_t&&\text{(int32; see below)}\\
+u_h&=\clamp(0,127,\;z_h\gg\mathit{sh}_z)&&\text{(u8 input to fc\_0, \texttt{pmaddubsw}-safe, Thm.~\ref{thm:t10})}
+\end{align*}
+For binary $\beta$, $E_t=\sum_{i<j}\beta_i\beta_jV_{t,i}V_{t,j}$, hence
+\[
+\sum_t\Lambda_{h,t}E_t=\sum_{i<j}\beta_i\beta_jQ^h_{ij},\qquad Q^h=V^\top\mathrm{diag}(\Lambda_h)V
+\]
+(Theorem~\ref{thm:t13}).
+So the pre-shift head value $z_h-b^z_h$ (computed from the exact $E_t$) is a learned sum over \emph{all} ($\le\binom{32}{2}=496$) pairs of present pieces, with a pair table of rank $\le r$ and diagonal core, i.e.\ a multi-head factorization machine~\cite{rendle2010}.
+The deployed $u_h$ applies a floor shift, an int16 clamp, a second shift and a 0..127 clamp to it, so it is an FM only approximately.
+The shifts and clamps act on the exact state at readout, so they cause no drift over a game; that is a different claim from exactness of the readout.
+
+\emph{Range of $z_h$.} The head sum $\sum_t\Lambda_{h,t}\hat e_t$ is $<2^{31}$ in absolute value for $r\le32$ by Theorem~\ref{thm:t16}(a) (the proof goes through the bound 133,169,152).
+The int32 bias $b^z_h$ does not occur in the Lean statement: it must additionally satisfy $|b^z_h|\le2^{31}-1-133{,}169{,}152$, which the export script checks and Lean does not.
+Likewise $P2$ is stored as wrapping int32 ($\Zm{32}$), but the Lean development has no $\Zm{32}$ instance and no int32 decode lemma; T9 and T16 bound only the exact integer values of $P1$, $P2$ and $P1^2-P2$.
+
+\paragraph{fc\_0 input and initialization.}
+For each layer stack, fc\_0 reads $[o_{\mathrm{stm}};o_{\mathrm{nstm}};u_{\mathrm{stm}};u_{\mathrm{nstm}}]$, which is $1024+2m$ inputs.
+Setting the extra fc\_0 columns $B_z=0$ alone makes fc\_0 compute exactly NNUE's $A\,a$, whatever the PSI outputs are (Theorem~\ref{thm:t18}(b)); composing this with the rest of the network into whole-network equality is immediate but not itself formalized.
+With $\Lambda=0$ (Theorem~\ref{thm:t18}(a)) the PSI head sums vanish, so $u_h$ is the constant $\clamp(0,127,b^z_h\gg\mathit{sh}_z)$, not $0$ in general.
+
+\paragraph{Perspective sharing without duplication.}
+Let $\sigma_c$ be the colour flip $(\mathit{col},\mathit{type},\mathit{sq})\mapsto(1-\mathit{col},\mathit{type},\mathit{sq}\oplus56)$, and let $P$ be an involutive lane permutation.
+Because PSI is White-absolute and king-independent, one state serves both perspectives in any case: an untied model can read the same $E$ with perspective-specific heads.
+Under the tying constraint $V_{P(t),\sigma_c(i)}=V_{t,i}$, the Black-perspective power sums are moreover the White ones read in permuted lane order: $P1^{(B)}=P1\circ P$ and $P2^{(B)}=P2\circ P$ (Theorem~\ref{thm:t21}).
+Tying thus makes the Black readout equal to the White readout under a lane permutation and halves the free parameters of $V$; it does not shrink the state.
+
+\paragraph{Incremental alternative.}
+$E$ can be maintained directly.
+Adding feature $j$ gives $\Delta E_t=V_{t,j}P1_t(\text{before})$, and removing it gives $\Delta E_t=-V_{t,j}P1_t(\text{after})$ (Theorem~\ref{thm:t14}).
+This replaces the $P2$ state by $r$ multiply-adds per changed feature.
+
+\paragraph{What PSI adds, stated correctly.}
+It is \emph{false} that NNUE's first layer is affine in $\beta$.
+K32H3 is already degree~2 in $\beta$ (king one-hot $\times$ piece-square) and piecewise in material block.
+Threat and pawn-pair features are explicit, geometry-gated pairs.
+The pairwise product in the FT output creates clipped rank-one quadratics.
+The precise statement is narrower: at fixed king squares and fixed block, a K32H3 PSQ lane is affine in the non-king piece indicators, while a PSI lane is not (the PSI half is Theorem~\ref{thm:t18}(d); the K32H3 half is an informal coordinate-wise application of Theorem~\ref{thm:t18}(c)).
+PSI therefore adds dense, low-rank, unclipped, king-independent piece$\times$piece terms over all pairs.
+They complement the sparse explicit pairs rather than replacing them.
+Whether this lowers loss at equal cost is an empirical question (Section~\ref{sec:training}).
+
+\paragraph{Degree 3 (C1$'$, ablation).}
+With $A\in\Z^{R\times768}$, $|A|\le15$, state $P1,P2,P3$ per lane, the readout $6e_3=P1^3-3P1\,P2+2P3$ is divisible by 6 (Theorem~\ref{thm:t15}: \lnm{ng3_six_dvd} applied to $y=x\odot v$, which by \lnm{ng3_binary} has the state's power sums for binary $x$; this composition is not a separate Lean lemma).
+It is in int32 provided $|P1|\le480$, $|P2|\le7200$, $|P3|\le108{,}000$ (Theorem~\ref{thm:t16}(b)).
+These bounds follow from $|A|\le15$ and at most 32 active features by the argument of \lnm{abs_sum_le_card_mul}, but they are not instantiated in Lean.
+
+\subsection{Low-rank king transitions (C2, C2$'$)}
+
+Inside a block, constrain $W_{\mathrm{blk},\kappa}=W^0_{\mathrm{blk}}+U_{\mathrm{blk},\kappa}V_K$.
+A single $V_K$ is shared by all blocks and buckets.
+The integer factors $U$ (int16) and $V_K$ (int8) are quantized directly, and the stored int16 table is \emph{materialized from the quantized factors}, so the identity holds exactly.
+Each perspective maintains $y_c=V_Kx_c\in\Z^{r_K}$.
+For an own-king move $\kappa\to\kappa'$ within a block and mirror half (Theorem~\ref{thm:t23}),
+\[
+a'=a+(U_{\kappa'}-U_\kappa)\,y(\text{before})+W_{\kappa'}(x'-x)\;(+\text{threat/pawn-pair deltas}).
+\]
+This costs $r_K$ mcol if the difference $\Delta U$ is precomputed or $2r_K$ mcol if it is formed on the fly, plus $k$ col.
+A precomputed $\Delta U$ table needs about 18.5\,MB (188 ordered adjacent bucket pairs within a mirror half $\times$ 3 blocks $\times$ $r_K\times L\times2$\,B; up to 25\,MB if 8 neighbours per bucket are assumed) and is not recommended.
+The identity is elementary distributivity; we call this source ``Woodbury'' in tables only for the low-rank-correction pattern, not for any matrix inverse.
+C2 is one candidate source among several and is \emph{not} claimed to beat Stockfish's hybrid in general.
+Like nnue-pytorch's factorizer~\cite{nnuepytorchdocs} it shares a king-independent part across buckets, but it keeps the bucket-specific part low-rank so that it can be applied at inference.
+The factored mode C2$'$ stores only the region tables and the factors.
+It saves memory (Section~\ref{sec:complexity}) but pays $r_K\cdot L$ multiply-adds per perspective per evaluation: 16,384 MACs per perspective at $r_K=16$, i.e.\ 32,768 for both perspectives, equal to a dense fc\_0 ($1024\times32$).
+
+
+\subsection{Source selection (C3) and net-delta catch-up (C4)}
+
+When perspective $c$ needs $a=\accS(S)$ in table $T$, any source in Table~\ref{tab:sources} may be used.
+A source whose preconditions fail has cost $\top$.
+All costs are computable from bitboards and cache metadata before any column is loaded, so the choice is made offline, not as an online (ski-rental) decision.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Candidate sources for an accumulator build. Stockfish's set is the first three rows.}\label{tab:sources}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright}X>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+id & source & correctness & cost (cols, passes)\\
+\midrule
+refresh & bias $b$ & definition & $|S|$ col $+\,\tau_{\text{full}}+1$ pass\\
+finny & Finny entry with board $C$ & Thm.~\ref{thm:t3} & $|S\symd C|$ col $+1$ pass\\
+hybrid & $\mathit{prev}-\mathit{cache}_{\text{old}}+\mathit{cache}_{\text{new}}$ + fix-ups & Thm.~\ref{thm:t24} & $|S_{\text{prev}}\symd C_{\text{old}}|+|S\symd C_{\text{new}}|$ col $+3$ passes (2 extra)\\
+woodbury & C2 transition from parent & Thm.~\ref{thm:t23} & $\mu r_K$ (or $2\mu r_K$) $+\,k$ col $+1$ pass\\
+ancestor & nearest computed ancestor, net delta & Thms.~\ref{thm:t2},~\ref{thm:t5} & $|\supp\sum_{j>u}\delta_j|$ col $+1$ pass\\
+finnyMirror & mirrored Finny entry (C6 tying only) & valid by Thm.~\ref{thm:t21} (over $\Z$; the $\Zm{16}$ version follows via \lnm{castLanes_accV} but is not stated); same cost by Thm.~\ref{thm:t6} & $|S\symd C|$ col $+1$ permutation pass\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+C4 handles a lazy evaluation at ply $t$ from a materialized ancestor $u$.
+It forms $\Delta=\sum_{j=u+1}^t\delta_j$ over sparse index lists, drops zeros, and applies $\Delta$ in one pass.
+This generalizes Stockfish's two-ply cancellation~\cite{sfpr5988}.
+The author of that change estimated informally (``$\sim$0.2\% I think'') that few three-move updates involve one side moving the same piece twice in a row~\cite{sfpr5988}; this is not a measurement of how many columns cancellation saves.
+
+\subsection{Exact update rules per move type}
+
+Table~\ref{tab:moves} gives the PSI deltas.
+King moves are ordinary moves for PSI.
+The PSI update is $P1\mathrel{+}=\sum_{f\in A}V_{\cdot,f}-\sum_{f\in R}V_{\cdot,f}$, and likewise for $P2$ with $V^{\circ2}$.
+For the FT of perspective $c$ there are five cases.
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item A non-king move, or an opponent-king move, with the block unchanged: add and subtract columns as in master (if C2 is on, also update $y_c$).
+\item An own-king move within the same block and half: C3 over \{refresh, finny, hybrid, woodbury, ancestor\}.
+\item An own-king move across the d/e boundary, or castling: C3 over \{refresh, finny, finnyMirror, ancestor\}, with $y_c$ recomputed.
+\item A block change: C3 over \{refresh, finny, ancestor\}.
+\item A lazy evaluation: chain catch-up from the nearest computed ancestor as in master, or another C3 source if cheaper. C4 (one net-delta pass without materializing intermediates) is an off-by-default option.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Absolute-feature deltas used by PSI ($c$ = mover, $\bar c$ = opponent).}\label{tab:moves}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Move & removed & added & $k_a$\\
+\midrule
+quiet (incl.\ non-castling king) & $(c,p,\mathit{from})$ & $(c,p,\mathit{to})$ & 2\\
+capture & $(c,p,\mathit{from}),(\bar c,q,\mathit{to})$ & $(c,p,\mathit{to})$ & 3\\
+en passant & $(c,P,\mathit{from}),(\bar c,P,\mathit{to}\mp8)$ & $(c,P,\mathit{to})$ & 3\\
+promotion to $q$ & $(c,P,\mathit{from})$ & $(c,q,\mathit{to})$ & 2\\
+capture-promotion & $(c,P,\mathit{from}),(\bar c,x,\mathit{to})$ & $(c,q,\mathit{to})$ & 3\\
+castling & $(c,K,\mathit{ksq}),(c,R,\mathit{rsq})$ & $(c,K,\mathit{ksq}'),(c,R,\mathit{rsq}')$ & 4\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{algorithm}[htbp]
+\caption{VNNUE make/evaluate (specification pseudocode).}\label{alg:vnnue}
+\begin{algorithmic}[1]
+\Procedure{MakeMove}{$st$, move}
+  \State $(R,A)\gets$ absolute delta of move \Comment{Table~\ref{tab:moves}}
+  \State $st.P1\gets st.\mathit{parent}.P1+\sum_{f\in A}V_{\cdot f}-\sum_{f\in R}V_{\cdot f}$ \Comment{wrapping int16}
+  \State $st.P2\gets st.\mathit{parent}.P2+\sum_{f\in A}V^{\circ2}_{\cdot f}-\sum_{f\in R}V^{\circ2}_{\cdot f}$ \Comment{wrapping int32 (not formalized)}
+  \For{$c\in\{W,B\}$} \State record sparse PSQ/threat delta; $st.\mathit{computed}[c]\gets$ false \EndFor
+\EndProcedure
+\Procedure{Evaluate}{$st$}
+  \For{$c\in\{W,B\}$ with $\neg st.\mathit{computed}[c]$}
+    \State $s\gets\arg\min_{s\in\textsc{Candidates}(st,c)}\mathit{cost}(s)$ \Comment{C3 (ancestor/C4 off by default)}
+    \State $st.\mathit{acc}[c]\gets s.\textsc{Build}()$ \Comment{exact by Thms.~\ref{thm:t2},~\ref{thm:t3},~\ref{thm:t23},~\ref{thm:t24}}
+  \EndFor
+  \State $o\gets$ pairwise products of $st.\mathit{acc}[\mathrm{stm}],st.\mathit{acc}[\mathrm{nstm}]$ \Comment{as master}
+  \State $u\gets(\textsc{PsiReadout}(st,\mathrm{stm}),\textsc{PsiReadout}(st,\mathrm{nstm}))$
+  \State \Return $\mathrm{LayerStack}[\mathrm{bucket}(st)](o,u)$
+\EndProcedure
+\Procedure{PsiReadout}{$st,c$}
+  \State $(P1,P2)\gets(st.P1,st.P2)$ if $c=W$ else $(st.P1\circ P,st.P2\circ P)$ \Comment{Thm.~\ref{thm:t21}}
+  \State $E\gets(P1^2-P2)\gg1$ \Comment{exact, Thm.~\ref{thm:t12}}
+  \State $\hat e\gets\clamp(E\gg\mathit{sh}_e,-32768,32767)$; $z\gets b^z+\Lambda\hat e$ \Comment{$|\Lambda\hat e|<2^{31}$ by T16a; $b^z$ script-checked}
+  \State \Return $\clamp(z\gg\mathit{sh}_z,0,127)$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Quantization and certificates (C5)}
+
+All accumulators use wrapping arithmetic: $\Zm{16}$ for int16 lanes and $\Zm{32}$ for int32 lanes (the Lean development instantiates only $\Z$ and $\Zm{16}$).
+
+Decoding uses a two's-complement decode $\dec$ with window $[-32768,32767]$.
+At export time an offline script checks a per-lane slot certificate (Theorem~\ref{thm:t9}).
+Features are grouped (by (colour, type) for PSQ lanes, by square for PSI lanes), and each group gets a legal capacity that allows for promotions: at most 16 pieces per colour, 8 pawns, 10 knights, bishops or rooks, 9 queens, and 1 king.
+The certificate then bounds every reachable lane value.
+The capacity facts about legal chess positions and the addition of the bias are informal inputs; Lean proves only the implication from per-group caps to the lane-sum bounds (\lnm{slot_certificate}), and the per-colour cap of 16 is not used by that per-group theorem.
+Table~\ref{tab:quant} summarizes the types.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Quantization summary.}\label{tab:quant}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright}p{2.6cm}l>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Tensor & Type & Range & Certificate\\
+\midrule
+$W_{\mathrm{blk},\kappa}$, $b$ & i16 & as master & Thm.~\ref{thm:t9} per lane\\
+$V$ (PSI) & i8 & $|V|\le127$ & $|P1|\le4064$ (i16), $P2\le516{,}128$ (i32)\\
+$\Lambda$ & i8 & $|\Lambda|\le127$ & $|\sum_t\Lambda\hat e|<2^{31}$ (Thm.~\ref{thm:t16}a; proof bound 133,169,152)\\
+$b^z$ & i32 & -- & $|b^z|+133{,}169{,}152<2^{31}$, script-checked (not in Lean)\\
+$A$ (C1$'$) & i8 & $|A|\le15$ & NG3 range given $|P_k|$ bounds (Thm.~\ref{thm:t16}b; bounds not derived in Lean)\\
+$U,V_K$ (C2) & i16, i8 & product exactly equals stored i16 table & Thm.~\ref{thm:t9} on materialized table\\
+fc\_0 extra columns & i8 & $u_h\in[0,127]$ & \texttt{pmaddubsw} pair bound (Thm.~\ref{thm:t10})\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\input{sec_theorems}
+\input{sec_experiments}
+\input{sec_discussion}
+\input{sec_appendix}
+
+\end{document}

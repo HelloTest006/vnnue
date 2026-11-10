@@ -1,0 +1,323 @@
+\begin{thebibliography}{45}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Acar et~al.(2002)Acar, Blelloch, and Harper]{acar2002}
+Umut~A. Acar, Guy~E. Blelloch, and Robert Harper.
+\newblock Adaptive functional programming.
+\newblock In \emph{Proceedings of the 29th ACM SIGPLAN-SIGACT Symposium on
+  Principles of Programming Languages (POPL)}, pages 247--259, 2002.
+
+\bibitem[Blondel et~al.(2016)Blondel, Fujino, Ueda, and Ishihata]{blondel2016}
+Mathieu Blondel, Akinori Fujino, Naonori Ueda, and Masakazu Ishihata.
+\newblock Higher-order factorization machines.
+\newblock In \emph{Advances in Neural Information Processing Systems 29
+  (NeurIPS)}, 2016.
+
+\bibitem[Borodin and El-Yaniv(1998)]{borodin1998}
+Allan Borodin and Ran El-Yaniv.
+\newblock \emph{Online Computation and Competitive Analysis}.
+\newblock Cambridge University Press, 1998.
+
+\bibitem[Budiu et~al.(2023)Budiu, Chajed, McSherry, Ryzhyk, and
+  Tannen]{budiu2023}
+Mihai Budiu, Tej Chajed, Frank McSherry, Leonid Ryzhyk, and Val Tannen.
+\newblock {DBSP}: Automatic incremental view maintenance for rich query
+  languages.
+\newblock \emph{Proceedings of the VLDB Endowment}, 16\penalty0 (7):\penalty0
+  1601--1614, 2023.
+\newblock \doi{10.14778/3587136.3587137}.
+
+\bibitem[Cai et~al.(2014)Cai, Giarrusso, Rendel, and Ostermann]{cai2014}
+Yufei Cai, Paolo~G. Giarrusso, Tillmann Rendel, and Klaus Ostermann.
+\newblock A theory of changes for higher-order languages: Incrementalizing
+  $\lambda$-calculi by static differentiation.
+\newblock In \emph{Proceedings of the 35th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation (PLDI)}, pages 145--155, 2014.
+\newblock \doi{10.1145/2594291.2594304}.
+
+\bibitem[ces42(2025)]{sfpr5988}
+ces42.
+\newblock Introduce double incremental accumulator updates, {S}tockfish {PR}
+  \#5988 (committed as fda269a).
+\newblock \url{https://github.com/official-stockfish/Stockfish/pull/5988},
+  2025.
+\newblock Committed directly to master (closed with label `to be merged').
+
+\bibitem[{Chessprogramming Wiki}(2026)]{cpwnnue}
+{Chessprogramming Wiki}.
+\newblock Stockfish {NNUE}.
+\newblock \url{https://www.chessprogramming.org/Stockfish_NNUE}, 2026.
+\newblock Accessed 2026-11-09.
+
+\bibitem[Cohen and Welling(2016)]{cohen2016}
+Taco~S. Cohen and Max Welling.
+\newblock Group equivariant convolutional networks.
+\newblock In \emph{Proceedings of the 33rd International Conference on Machine
+  Learning (ICML)}, volume~48 of \emph{PMLR}, pages 2990--2999, 2016.
+
+\bibitem[de~Moura and Ullrich(2021)]{demoura2021}
+Leonardo de~Moura and Sebastian Ullrich.
+\newblock The {L}ean 4 theorem prover and programming language.
+\newblock In \emph{Automated Deduction -- CADE 28}, volume 12699 of
+  \emph{Lecture Notes in Computer Science}, pages 625--635. Springer, 2021.
+\newblock \doi{10.1007/978-3-030-79876-5_37}.
+
+\bibitem[gab8192(2024)]{sffinny}
+gab8192.
+\newblock Implement accumulator refresh table (``{F}inny tables''), {S}tockfish
+  {PR} \#5183, commit 49ef4c9.
+\newblock
+  \url{https://github.com/official-stockfish/Stockfish/commit/49ef4c935a5cb0e4d94096e6354caa06b36b3e3c},
+  2024.
+\newblock Committed directly to master (closed with label `to be merged').
+
+\bibitem[Higham(2002)]{higham2002}
+Nicholas~J. Higham.
+\newblock \emph{Accuracy and Stability of Numerical Algorithms}.
+\newblock SIAM, Philadelphia, 2nd edition, 2002.
+
+\bibitem[Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen]{hu2022lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2022.
+\newblock arXiv:2106.09685.
+
+\bibitem[Jacob et~al.(2018)Jacob, Kligys, Chen, Zhu, Tang, Howard, Adam, and
+  Kalenichenko]{jacob2018}
+Benoit Jacob, Skirmantas Kligys, Bo~Chen, Menglong Zhu, Matthew Tang, Andrew
+  Howard, Hartwig Adam, and Dmitry Kalenichenko.
+\newblock Quantization and training of neural networks for efficient
+  integer-arithmetic-only inference.
+\newblock In \emph{Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition (CVPR)}, pages 2704--2713, 2018.
+
+\bibitem[jw1912 and contributors(2026)]{bullet}
+jw1912 and contributors.
+\newblock bullet: a specialised {ML} library for training {NNUE} networks.
+\newblock \url{https://github.com/jw1912/bullet}, 2026.
+
+\bibitem[Karlin et~al.(1988)Karlin, Manasse, Rudolph, and Sleator]{karlin1988}
+Anna~R. Karlin, Mark~S. Manasse, Larry Rudolph, and Daniel~D. Sleator.
+\newblock Competitive snoopy caching.
+\newblock \emph{Algorithmica}, 3\penalty0 (1):\penalty0 79--119, 1988.
+
+\bibitem[Kaufman(1999)]{kaufman1999}
+Larry Kaufman.
+\newblock The evaluation of material imbalances.
+\newblock \emph{Chess Life}, March 1999.
+
+\bibitem[Knuth and Moore(1975)]{knuth1975}
+Donald~E. Knuth and Ronald~W. Moore.
+\newblock An analysis of alpha-beta pruning.
+\newblock \emph{Artificial Intelligence}, 6\penalty0 (4):\penalty0 293--326,
+  1975.
+\newblock \doi{10.1016/0004-3702(75)90019-3}.
+
+\bibitem[Kolda and Bader(2009)]{kolda2009}
+Tamara~G. Kolda and Brett~W. Bader.
+\newblock Tensor decompositions and applications.
+\newblock \emph{SIAM Review}, 51\penalty0 (3):\penalty0 455--500, 2009.
+
+\bibitem[{lichess.org}(2013)]{lichessdb}
+{lichess.org}.
+\newblock lichess.org open database (standard rated games, january 2013).
+\newblock \url{https://database.lichess.org}, 2013.
+
+\bibitem[Macdonald(1995)]{macdonald1995}
+Ian~G. Macdonald.
+\newblock \emph{Symmetric Functions and {H}all Polynomials}.
+\newblock Oxford University Press, 2nd edition, 1995.
+
+\bibitem[Nasu(2018)]{nasu2018}
+Yu~Nasu.
+\newblock Efficiently updatable neural-network-based evaluation functions for
+  computer shogi.
+\newblock Appeal document, 28th World Computer Shogi Championship (in
+  Japanese).
+  \url{https://www.apply.computer-shogi.org/wcsc28/appeal/the_end_of_genesis_T.N.K.evolution_turbo_type_D/nnue.pdf};
+  English translation (GitHub user asdfjkl, D.~Klein),
+  \url{https://github.com/asdfjkl/nnue}, retypeset 2025, 2018.
+
+\bibitem[Neil et~al.(2017)Neil, Lee, Delbruck, and Liu]{neil2017}
+Daniel Neil, Jun~Haeng Lee, Tobi Delbruck, and Shih-Chii Liu.
+\newblock Delta networks for optimized recurrent network computation.
+\newblock In \emph{Proceedings of the 34th International Conference on Machine
+  Learning (ICML)}, volume~70 of \emph{PMLR}, pages 2584--2593, 2017.
+
+\bibitem[{Official Stockfish / nnue-pytorch
+  contributors}(2020--2026)]{nnuepytorchdocs}
+{Official Stockfish / nnue-pytorch contributors}.
+\newblock {NNUE} (nnue-pytorch documentation, docs/nnue.md).
+\newblock
+  \url{https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md},
+  2020--2026.
+\newblock Accessed 2026-11-09.
+
+\bibitem[Paige and Koenig(1982)]{paige1982}
+Robert Paige and Shaye Koenig.
+\newblock Finite differencing of computable expressions.
+\newblock \emph{ACM Transactions on Programming Languages and Systems},
+  4\penalty0 (3):\penalty0 402--454, 1982.
+\newblock \doi{10.1145/357172.357177}.
+
+\bibitem[Parger et~al.(2022)Parger, Tang, Twigg, Keskin, Wang, and
+  Steinberger]{parger2022}
+Mathias Parger, Chengcheng Tang, Christopher~D. Twigg, Cem Keskin, Robert Wang,
+  and Markus Steinberger.
+\newblock {DeltaCNN}: End-to-end {CNN} inference of sparse frame differences in
+  videos.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2022.
+
+\bibitem[Ravanbakhsh et~al.(2017)Ravanbakhsh, Schneider, and
+  P{\'o}czos]{ravanbakhsh2017}
+Siamak Ravanbakhsh, Jeff Schneider, and Barnab{\'a}s P{\'o}czos.
+\newblock Equivariance through parameter-sharing.
+\newblock In \emph{Proceedings of the 34th International Conference on Machine
+  Learning (ICML)}, volume~70 of \emph{PMLR}, pages 2892--2901, 2017.
+
+\bibitem[Rendle(2010)]{rendle2010}
+Steffen Rendle.
+\newblock Factorization machines.
+\newblock In \emph{Proceedings of the 10th IEEE International Conference on
+  Data Mining (ICDM)}, pages 995--1000, 2010.
+\newblock \doi{10.1109/ICDM.2010.127}.
+
+\bibitem[Shannon(1950)]{shannon1950}
+Claude~E. Shannon.
+\newblock Programming a computer for playing chess.
+\newblock \emph{Philosophical Magazine, Series 7}, 41\penalty0 (314):\penalty0
+  256--275, 1950.
+\newblock \doi{10.1080/14786445008521796}.
+
+\bibitem[Sherman and Morrison(1950)]{sherman1950}
+Jack Sherman and Winifred~J. Morrison.
+\newblock Adjustment of an inverse matrix corresponding to a change in one
+  element of a given matrix.
+\newblock \emph{Annals of Mathematical Statistics}, 21\penalty0 (1):\penalty0
+  124--127, 1950.
+\newblock \doi{10.1214/aoms/1177729893}.
+
+\bibitem[Silver et~al.(2018)Silver, Hubert, Schrittwieser, Antonoglou, Lai,
+  Guez, Lanctot, Sifre, Kumaran, Graepel, Lillicrap, Simonyan, and
+  Hassabis]{silver2018}
+David Silver, Thomas Hubert, Julian Schrittwieser, Ioannis Antonoglou, Matthew
+  Lai, Arthur Guez, Marc Lanctot, Laurent Sifre, Dharshan Kumaran, Thore
+  Graepel, Timothy Lillicrap, Karen Simonyan, and Demis Hassabis.
+\newblock A general reinforcement learning algorithm that masters chess, shogi,
+  and {Go} through self-play.
+\newblock \emph{Science}, 362\penalty0 (6419):\penalty0 1140--1144, 2018.
+
+\bibitem[sscg13 et~al.(2025)]{sfthreats}
+sscg13 et~al.
+\newblock Update {NNUE} architecture to {SFNNv10} with threat inputs and net
+  nn-49c1193b131c.nnue, {S}tockfish {PR} \#6411 (commit 8e5392d).
+\newblock
+  \url{https://github.com/official-stockfish/Stockfish/commit/8e5392d79a36aba5b997cf6fb590937e3e624e80},
+  2025.
+
+\bibitem[{Stockfish developers}(2020)]{sf11}
+{Stockfish developers}.
+\newblock Stockfish 11 source code (tag sf\_11), src/material.cpp
+  (material-imbalance polynomial).
+\newblock
+  \url{https://github.com/official-stockfish/Stockfish/blob/sf_11/src/material.cpp},
+  2020.
+
+\bibitem[{Stockfish developers}(2026{\natexlab{a}})]{fishtest}
+{Stockfish developers}.
+\newblock Fishtest: distributed testing framework for {S}tockfish.
+\newblock \url{https://tests.stockfishchess.org}, 2026{\natexlab{a}}.
+
+\bibitem[{Stockfish developers}(2026{\natexlab{b}})]{sfsource}
+{Stockfish developers}.
+\newblock Stockfish source code, src/nnue (nnue\_architecture.h,
+  nnue\_feature\_transformer.h, nnue\_accumulator.cpp, features/k32h3.h).
+\newblock
+  \url{https://github.com/official-stockfish/Stockfish/tree/7cdd5e89a39fe3071b67d91c7bb07d712044bf76/src/nnue},
+  2026{\natexlab{b}}.
+\newblock Master at commit 7cdd5e8 (6 November 2026), the tip of master when
+  accessed on 2026-11-09.
+
+\bibitem[{Stockfish team}(2026)]{sfreleases}
+{Stockfish team}.
+\newblock Stockfish releases (including {S}tockfish 18 and 19).
+\newblock \url{https://github.com/official-stockfish/Stockfish/releases}, 2026.
+
+\bibitem[{The mathlib Community}(2020)]{mathlib2020}
+{The mathlib Community}.
+\newblock The {L}ean mathematical library.
+\newblock In \emph{Proceedings of the 9th ACM SIGPLAN International Conference
+  on Certified Programs and Proofs (CPP)}, pages 367--381, 2020.
+\newblock \doi{10.1145/3372885.3373824}.
+
+\bibitem[TonyCongqianWang(2026)]{sfnnv18}
+TonyCongqianWang.
+\newblock Update {NNUE} architecture to {SFNNv18} and net nn-c9e480e92425.nnue
+  ({K32Q2}), {S}tockfish {PR} \#7215 (commit 5c4cef0).
+\newblock
+  \url{https://github.com/official-stockfish/Stockfish/commit/5c4cef0bfe61fb3249178b2bcf21f5673557efe7},
+  2026.
+
+\bibitem[Viren6(2024)]{pr5149}
+Viren6.
+\newblock Update {NNUE} architecture to {SFNNv9} with larger {L1} size of 3072,
+  {S}tockfish {PR} \#5149.
+\newblock \url{https://github.com/official-stockfish/Stockfish/pull/5149},
+  2024.
+\newblock Committed directly to master (closed with label `to be merged').
+
+\bibitem[Wald(1945)]{wald1945}
+Abraham Wald.
+\newblock Sequential tests of statistical hypotheses.
+\newblock \emph{Annals of Mathematical Statistics}, 16\penalty0 (2):\penalty0
+  117--186, 1945.
+
+\bibitem[Williams et~al.(2009)Williams, Waterman, and Patterson]{williams2009}
+Samuel Williams, Andrew Waterman, and David Patterson.
+\newblock Roofline: An insightful visual performance model for multicore
+  architectures.
+\newblock \emph{Communications of the ACM}, 52\penalty0 (4):\penalty0 65--76,
+  2009.
+
+\bibitem[Woodbury(1950)]{woodbury1950}
+Max~A. Woodbury.
+\newblock Inverting modified matrices.
+\newblock Memorandum Report~42, Statistical Research Group, Princeton
+  University, 1950.
+
+\bibitem[Xu(2024)]{pr4915}
+Linmiao Xu.
+\newblock Dual {NNUE} with {L1}-128 smallnet, {S}tockfish {PR} \#4915.
+\newblock \url{https://github.com/official-stockfish/Stockfish/pull/4915},
+  2024.
+\newblock Committed directly to master (closed with label `to be merged').
+
+\bibitem[Xu(2026)]{pr563}
+Shawn Xu.
+\newblock {K32H3} \& refactors, nnue-pytorch {PR} \#563.
+\newblock \url{https://github.com/official-stockfish/nnue-pytorch/pull/563},
+  2026.
+
+\bibitem[Zaheer et~al.(2017)Zaheer, Kottur, Ravanbakhsh, P{\'o}czos,
+  Salakhutdinov, and Smola]{zaheer2017}
+Manzil Zaheer, Satwik Kottur, Siamak Ravanbakhsh, Barnab{\'a}s P{\'o}czos,
+  Ruslan Salakhutdinov, and Alexander Smola.
+\newblock Deep sets.
+\newblock In \emph{Advances in Neural Information Processing Systems 30
+  (NeurIPS)}, 2017.
+
+\bibitem[Zobrist(1970)]{zobrist1970}
+Albert~L. Zobrist.
+\newblock A new hashing method with application for game playing.
+\newblock Technical Report~88, Computer Sciences Department, University of
+  Wisconsin, 1970.
+
+\end{thebibliography}

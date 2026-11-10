@@ -1,0 +1,128 @@
+%=====================================================================
+\section{Discussion}\label{sec:discussion}
+%=====================================================================
+
+\paragraph{What worked.}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item \emph{The algebraic view is right and checkable.}
+For a fixed weight table, the \emph{correctness} of every accumulator mechanism we examined is an instance of a few identities in a homomorphism $\Z^N\to R^L$: T1--T3, T23, T24(b).
+This holds for incremental updates, Finny caches, the hybrid update, lazy catch-up and low-rank transitions.
+Instantiating at $R=\Zm{16}$ makes wrap-around exactness a corollary rather than a folklore observation, and E1 confirmed bit-exactness on 14.5 million checks (6.67M accumulator-source, 7.80M PSI/$y$/feature-delta), including 58 million lane results whose paths overflowed.
+\item \emph{PSI is cheap and exact as an update.}
+Its per-move weight-column traffic is bounded by a proved 4.6875\% of PSQ column traffic and measured at 2.68\% over real games (1.14\% with the threat proxy, on the first 600 games); these ratios exclude PSI's own state pass.
+It never needs a refresh.
+Its integer readout is exact over $\Z$ (T12), and the exact $P1$, $P2$ and head sums are within int16/int32 (T9, T16).
+Wrapping $\Zm{32}$ semantics for $P2$ and the bias $b^z$ are not covered by Lean.
+\item \emph{Formalization caught errors in our own specification.}
+The \texttt{valMinAbs} window, saturation path dependence, the missing hypotheses in the degree-3 range, the false ``$V=I$'' universality claim, the false affinity claim, and the low-rank expressiveness reading were all caught and corrected before implementation.
+These were errors in our design document; several are known facts (Mathlib's documented \texttt{valMinAbs} convention, the reason Stockfish uses wrapping adds, an elementary rank argument), not findings about NNUE.
+\end{itemize}
+
+\paragraph{What did not work, or not yet.}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item \emph{``Never worse'' is true but nearly vacuous in practice.}
+T24 is min-monotonicity.
+Empirically the extra freedom in the VN set (choosing refresh, Finny or hybrid instead of a forced chain, plus the ancestor candidate) contributed at most 0.10\% per-event savings in eager runs (Table~\ref{tab:e3cf}); Woodbury was not in the E3 sets and was evaluated separately (E4, Section~\ref{sec:e4}).
+The visible gain of VN over the SF rule comes from taking the argmin over SF's own set, which would equally improve Stockfish, and its size depends on our simulator's cache model (Section~\ref{sec:e3}).
+\item \emph{Greedy net-delta catch-up is harmful.}
+Per-event optimality does not compose across a stateful search, and skipping materialization destroys reuse by siblings.
+On lazy trees even VN\_noC4, without C4, is worse than SFmin.
+C4 would need a reuse-aware policy, for example one guided by the ski-rental analysis (A1), before it could help.
+\item \emph{Low-rank king transitions rarely win.}
+At the specification default they never won.
+They win own-king events only with a precomputed $\Delta U$ table (about 18.5\,MB) or very small $r_K$, and even then the net saving is small once their multiply-add columns are counted: on Lichess games at $r_K=16$ with precomputed $\Delta U$, FT bytes fall only to 0.9828 of VN's, and on search trees they rise.
+E5 shows that the exact integer-factor constraint costs a lot of accuracy without QAT.
+\item \emph{PSI has no demonstrated benefit on chess labels.}
+It learned planted pair structure (E6), but on game results all models were worse than the mean predictor, and on a linear label PSI has nothing to add.
+Our data is too small to say anything about real evaluation quality.
+\item \emph{Tying is a prior, not a free lunch.}
+Colour-flip tying of $V$ halves the free parameters of $V$ (the state is shared by both perspectives with or without tying), but it hurt on a non-symmetric teacher (E7).
+\end{itemize}
+
+\paragraph{What would establish an improvement.}
+Whether VNNUE improves an engine depends on two quantities we cannot measure here.
+The first is the change in evaluation accuracy at fixed compute, for networks trained on Stockfish-scale data (billions of positions with Leela-rescored labels).
+The second is the change in node rate caused by the added PSI bytes and readout MACs on real SIMD hardware.
+Establishing an improvement would require the following steps:
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item a C++ implementation of C1 (and optionally C3) in Stockfish, with perf-counter measurements of nps, cache misses and bytes per node on AVX2, AVX-512 and NEON;
+\item training K32H3+PSI with the full nnue-pytorch pipeline and quantization-aware training, against an identically trained K32H3 baseline, and comparing validation loss at equal measured nps;
+\item an ablation over $r\in\{0,8,16,32\}$, $m\in\{0,8,16\}$, degree, tying, and the C2/C6 modes;
+\item fixed-node matches, followed by fixed-time SPRT~\cite{wald1945} at two time controls on Fishtest-like infrastructure~\cite{fishtest}.
+\end{enumerate}
+Until then, VNNUE should be read as a verified design whose costs are bounded and whose benefits are hypotheses.
+
+\paragraph{Threats to validity of the formal results.}
+The Lean development proves statements about abstract index sets and lane groups.
+Its connection to engine code rests on informal modelling: the feature map, the move-delta table, and the cost model.
+E1 tests the Python prototype, not Stockfish.
+The cost theorems (T24, T25) are only as meaningful as their cost functions.
+
+%=====================================================================
+\section{Related work}\label{sec:related}
+%=====================================================================
+
+\paragraph{NNUE.}
+NNUE was introduced by Nasu~\cite{nasu2018} and documented for chess in the nnue-pytorch documentation~\cite{nnuepytorchdocs}.
+Its engineering in Stockfish includes Finny tables~\cite{sffinny}, two-ply cancellation~\cite{sfpr5988}, threat inputs~\cite{sfthreats,sfsource}, larger and then smaller L1~\cite{pr5149}, the dual-net period~\cite{pr4915}, K32Q2~\cite{sfnnv18} and K32H3~\cite{pr563}.
+This is the direct baseline, and all of the mechanisms we formalize in T1--T11 and T24(b) are credited prior art.
+Our contribution there is the exact statement and machine-checked proof, not the mechanism.
+The bullet trainer~\cite{bullet} and other engines use similar input-bucket designs; the Stockfish threat-input change itself credits prior threat-input work in Monty, PlentyChess and Yukari~\cite{sfthreats}.
+nnue-pytorch's feature factorization (shared virtual features merged into king-bucketed weights at export)~\cite{nnuepytorchdocs} is the full-rank, training-time precursor of C2.
+We have not surveyed every engine, and pairwise interaction ideas may exist in community engines that we are not aware of.
+
+\paragraph{Incremental computation.}
+Finite differencing~\cite{paige1982}, self-adjusting computation~\cite{acar2002}, change theories~\cite{cai2014} and DBSP~\cite{budiu2023} provide general frameworks.
+NNUE is a particularly clean instance: the derivative of a linear map is the map itself.
+Delta networks~\cite{neil2017} and DeltaCNN~\cite{parger2022} apply temporal sparsity to deep networks.
+They accept approximation, whereas we insist on bit-exactness.
+
+\paragraph{Interactions and set functions.}
+Factorization machines~\cite{rendle2010} and their higher-order variants~\cite{blondel2016} compute pairwise (and higher) interactions from power sums. Tensor decompositions~\cite{kolda2009} are the general low-rank language.
+Deep Sets~\cite{zaheer2017} show that sum-of-embeddings pooling is the canonical permutation-invariant architecture (on countable domains).
+In chess, pairwise piece terms predate NNUE: material-imbalance polynomials~\cite{kaufman1999,sf11}, and in NNUE the FT pairwise product and the threat and pawn-pair features.
+PSI's contribution is a parametrization: a refresh-free power-sum state for square-level pair interactions that complements the FT's clipped rank-one products, with pre-shift head values that form a factorization machine.
+
+\paragraph{Symmetry.}
+Group-equivariant networks~\cite{cohen2016} and equivariance through parameter sharing~\cite{ravanbakhsh2017} give the framework of T21--T22.
+Stockfish's perspective flip and horizontal mirroring are special cases.
+
+\paragraph{Low rank.}
+nnue-pytorch's factorizer~\cite{nnuepytorchdocs} ($W_\kappa=R_\kappa+Q$, merged at export) is the direct precursor of C2; C2 restricts the bucket-specific part to rank $r_K$ so that it can be applied incrementally at inference, and \lnm{lowrank_generalizes} is the full-rank case.
+The low-rank-correction pattern is also that of Sherman--Morrison--Woodbury~\cite{sherman1950,woodbury1950} (which concerns inverses) and LoRA~\cite{hu2022lora}.
+Our negative result \texttt{lowrank\_proper} is the elementary rank argument that limits all such schemes.
+
+\paragraph{Quantization and formal methods.}
+Integer-only inference~\cite{jacob2018} and rounding analysis~\cite{higham2002} underlie C5.
+We are not aware of prior machine-checked proofs about NNUE accumulators.
+The formalization uses Lean~4~\cite{demoura2021} and Mathlib~\cite{mathlib2020}.
+
+%=====================================================================
+\section{Conclusion and future work}\label{sec:conclusion}
+%=====================================================================
+
+We recast NNUE accumulator maintenance as an exact update calculus over the delta group $\Z^N\to(\Zm{16})^L$ and formalized it in Lean~4: 149 theorem declarations and a full build with no \texttt{sorry}; the axiom audit of all 149 declarations shows only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
+On top of it we designed VNNUE.
+VNNUE keeps Stockfish's FT, adds a refresh-free power-sum interaction channel whose pre-shift head values form an all-pairs factorization machine, and replaces rule-based accumulator sourcing with a min-cost selection over a superset of Stockfish's candidates.
+The update mechanics are exact (14.5 million checks: 6.67M accumulator-source and 7.80M PSI/$y$/feature-delta, 0 mismatches) and cheap in weight-column traffic (PSI adds 2.68\% of PSQ column bytes on real games, not counting its own state pass).
+
+The proposed efficiency gains beyond Stockfish's existing machinery are essentially absent (C3 superset), harmful (greedy C4) or conditional on unattractive trade-offs (C2).
+The accuracy benefit of PSI on chess is unknown.
+
+The next steps follow directly from this.
+The first is to implement C1 in Stockfish's C++ with SIMD, and to measure nps and bytes per node.
+The second is to train K32H3+PSI at scale with QAT and compare validation loss at equal nps.
+The third is to test with SPRT on Fishtest.
+On the theory side, the obvious extensions are to formalize a reuse-aware materialization policy for catch-up, to connect the abstract index sets to a verified K32H3 feature map, and to state explicit $\Zm{32}$ instances and an int32 decode lemma for the PSI state. The generic theorems already hold over any abelian group, but the development instantiates them only at $\Z$ and $\Zm{16}$.
+
+\paragraph{Code and data availability.}
+All Lean sources, the Modal-based proof checker, the experiment scripts, derived datasets, raw result files, figures and the \LaTeX{} sources of this paper are available at \url{https://github.com/HelloTest006/vnnue}.
+The raw Lichess game file is not redistributed; it is available under CC0 from \url{https://database.lichess.org}.
+
+\paragraph{Acknowledgments and use of AI tools.}
+The research notes, design, Lean formalization, experiment code and drafts of this paper were produced with substantial assistance from an AI system (Claude, by Anthropic), operating under the author's direction.
+Every theorem cited as proved is checked by the Lean kernel (Appendix~\ref{app:lean}), and every reported number is produced by the published scripts.
+The author takes full responsibility for the content.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}

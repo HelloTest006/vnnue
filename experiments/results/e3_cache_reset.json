@@ -1,0 +1,731 @@
+{
+ "config": {
+  "reset_cache_per_root": true,
+  "cost_scalar": "cols + mu*mcols + 2*passes"
+ },
+ "datasets": {
+  "games_lichess/eager": {
+   "nodes": 202984,
+   "roots": 3000,
+   "policies": {
+    "SF": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1611565,
+     "mcols": 0,
+     "passes": 422092,
+     "ft_bytes": 5029373952,
+     "sources": {
+      "finny": 28250,
+      "chain": 369656,
+      "hybrid": 8062
+     },
+     "cols_per_eval": 7.939369605486147,
+     "passes_per_eval": 2.0794348323020535,
+     "ft_bytes_per_eval": 24777.19402514484,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.017395342011744686,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 345.0,
+     "counterfactual_sf_colequiv": 2318947.0
+    },
+    "SFmin": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1512718,
+     "mcols": 0,
+     "passes": 405968,
+     "ft_bytes": 4760891392,
+     "sources": {
+      "refresh": 33583,
+      "chain": 369656,
+      "finny": 2729
+     },
+     "cols_per_eval": 7.452400189177472,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23454.515587435464,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.018376323422754526,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 345.0,
+     "counterfactual_sf_colequiv": 2324654.0
+    },
+    "VN_noC4": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1512330,
+     "mcols": 0,
+     "passes": 405968,
+     "ft_bytes": 4760096768,
+     "sources": {
+      "refresh": 33582,
+      "chain": 369343,
+      "finny": 3043
+     },
+     "cols_per_eval": 7.450488708469633,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23450.60087494581,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.018379391063673436,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 347.0,
+     "counterfactual_sf_colequiv": 2324613.0
+    },
+    "VN": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1512245,
+     "mcols": 0,
+     "passes": 405968,
+     "ft_bytes": 4759922688,
+     "sources": {
+      "refresh": 33531,
+      "chain": 369343,
+      "ancestor": 61,
+      "finny": 3033
+     },
+     "cols_per_eval": 7.45006995625271,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23449.74327040555,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.018380063235178327,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 576.0,
+     "counterfactual_sf_colequiv": 2324757.0
+    }
+   },
+   "SF_finny_cost_at_table_change": {
+    "n": 28250,
+    "mean": 18.787646017699114,
+    "p50": 17.0,
+    "p95": 32.0,
+    "max": 48.0
+   },
+   "SF_hybrid_cost": {
+    "n": 8062,
+    "mean": 30.398040188538825,
+    "p50": 29.0,
+    "p95": 55.0,
+    "max": 82.0
+   },
+   "per_move_type": {
+    "capture": {
+     "count": 44132,
+     "SF_cols_mean": 7.307735883259313,
+     "SF_bytes_mean": 23158.243088915075,
+     "VN_cols_mean": 7.298354935194417,
+     "VN_bytes_mean": 23139.030907278164
+    },
+    "capture_promotion": {
+     "count": 30,
+     "SF_cols_mean": 13.866666666666667,
+     "SF_bytes_mean": 36590.933333333334,
+     "VN_cols_mean": 11.933333333333334,
+     "VN_bytes_mean": 32631.466666666667
+    },
+    "castling": {
+     "count": 4519,
+     "SF_cols_mean": 32.41380836468245,
+     "SF_bytes_mean": 74575.47953086966,
+     "VN_cols_mean": 32.41380836468245,
+     "VN_bytes_mean": 74575.47953086966
+    },
+    "en_passant": {
+     "count": 90,
+     "SF_cols_mean": 6.0,
+     "SF_bytes_mean": 20480.0,
+     "VN_cols_mean": 6.0,
+     "VN_bytes_mean": 20480.0
+    },
+    "king_capture": {
+     "count": 2407,
+     "SF_cols_mean": 21.407561279601165,
+     "SF_bytes_mean": 54594.04736186124,
+     "VN_cols_mean": 17.558371416701288,
+     "VN_bytes_mean": 44151.54466140424
+    },
+    "king_quiet": {
+     "count": 19305,
+     "SF_cols_mean": 19.47961667961668,
+     "SF_bytes_mean": 51188.2243978244,
+     "VN_cols_mean": 14.874488474488475,
+     "VN_bytes_mean": 38654.95239575239
+    },
+    "promotion": {
+     "count": 502,
+     "SF_cols_mean": 12.047808764940239,
+     "SF_bytes_mean": 32865.91235059761,
+     "VN_cols_mean": 10.776892430278885,
+     "VN_bytes_mean": 30263.075697211156
+    },
+    "quiet": {
+     "count": 128999,
+     "SF_cols_mean": 4.0,
+     "SF_bytes_mean": 16384.0,
+     "VN_cols_mean": 3.9996666640826675,
+     "VN_bytes_mean": 16383.317328041303
+    }
+   },
+   "woodbury_subset": {
+    "rK=4,mu=1.0,wb_mult=2": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1245531,
+     "mcols": 125416,
+     "passes": 405968,
+     "ft_bytes": 4470544384,
+     "sources": {
+      "refresh": 19267,
+      "chain": 369569,
+      "ancestor": 63,
+      "woodbury": 15677,
+      "finny": 1392
+     },
+     "cols_per_eval": 6.136104323493477,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22024.122019469516,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.019569804588702187,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 153267.0,
+     "counterfactual_sf_colequiv": 2336150.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.5976516335633411
+    },
+    "rK=16,mu=1.0,wb_mult=1": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1331872,
+     "mcols": 130224,
+     "passes": 405968,
+     "ft_bytes": 4657217536,
+     "sources": {
+      "refresh": 25865,
+      "chain": 369486,
+      "ancestor": 63,
+      "woodbury": 8139,
+      "finny": 2415
+     },
+     "cols_per_eval": 6.5614629724510305,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22943.766681117722,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.01878539692933081,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 55525.0,
+     "counterfactual_sf_colequiv": 2329557.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.31028172772673557
+    },
+    "rK=16,mu=1.0,wb_mult=2": {
+     "evals": 202984,
+     "builds": 405968,
+     "cols": 1512245,
+     "mcols": 0,
+     "passes": 405968,
+     "ft_bytes": 4759922688,
+     "sources": {
+      "refresh": 33531,
+      "chain": 369343,
+      "ancestor": 61,
+      "finny": 3033
+     },
+     "cols_per_eval": 7.45006995625271,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23449.74327040555,
+     "psi_lanes_total": 29162560,
+     "psi_bytes_total": 87487680,
+     "psi_bytes_over_ft_bytes": 0.018380063235178327,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 576.0,
+     "counterfactual_sf_colequiv": 2324757.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.0
+    }
+   }
+  },
+  "games_selfplay/eager": {
+   "nodes": 2440,
+   "roots": 30,
+   "policies": {
+    "SF": {
+     "evals": 2440,
+     "builds": 4880,
+     "cols": 18744,
+     "mcols": 0,
+     "passes": 5130,
+     "ft_bytes": 59400192,
+     "sources": {
+      "finny": 394,
+      "chain": 4361,
+      "hybrid": 125
+     },
+     "cols_per_eval": 7.6819672131147545,
+     "passes_per_eval": 2.1024590163934427,
+     "ft_bytes_per_eval": 24344.34098360656,
+     "psi_lanes_total": 343808,
+     "psi_bytes_total": 1031424,
+     "psi_bytes_over_ft_bytes": 0.017363984278030615,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 7.0,
+     "counterfactual_sf_colequiv": 26995.0
+    },
+    "SFmin": {
+     "evals": 2440,
+     "builds": 4880,
+     "cols": 17309,
+     "mcols": 0,
+     "passes": 4880,
+     "ft_bytes": 55437312,
+     "sources": {
+      "refresh": 393,
+      "chain": 4361,
+      "finny": 126
+     },
+     "cols_per_eval": 7.093852459016394,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22720.209836065573,
+     "psi_lanes_total": 343808,
+     "psi_bytes_total": 1031424,
+     "psi_bytes_over_ft_bytes": 0.018605231076138755,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 7.0,
+     "counterfactual_sf_colequiv": 27069.0
+    },
+    "VN_noC4": {
+     "evals": 2440,
+     "builds": 4880,
+     "cols": 17302,
+     "mcols": 0,
+     "passes": 4880,
+     "ft_bytes": 55422976,
+     "sources": {
+      "refresh": 393,
+      "chain": 4356,
+      "finny": 131
+     },
+     "cols_per_eval": 7.090983606557377,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22714.334426229507,
+     "psi_lanes_total": 343808,
+     "psi_bytes_total": 1031424,
+     "psi_bytes_over_ft_bytes": 0.018610043603576973,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 7.0,
+     "counterfactual_sf_colequiv": 27069.0
+    },
+    "VN": {
+     "evals": 2440,
+     "builds": 4880,
+     "cols": 17300,
+     "mcols": 0,
+     "passes": 4880,
+     "ft_bytes": 55418880,
+     "sources": {
+      "refresh": 392,
+      "chain": 4357,
+      "finny": 130,
+      "ancestor": 1
+     },
+     "cols_per_eval": 7.090163934426229,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22712.655737704918,
+     "psi_lanes_total": 343808,
+     "psi_bytes_total": 1031424,
+     "psi_bytes_over_ft_bytes": 0.018611419068736142,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 9.0,
+     "counterfactual_sf_colequiv": 27069.0
+    }
+   },
+   "SF_finny_cost_at_table_change": {
+    "n": 394,
+    "mean": 13.954314720812183,
+    "p50": 11.0,
+    "p95": 32.0,
+    "max": 40.0
+   },
+   "SF_hybrid_cost": {
+    "n": 125,
+    "mean": 27.96,
+    "p50": 26.0,
+    "p95": 54.0,
+    "max": 60.0
+   }
+  },
+  "trees/eager": {
+   "nodes": 389664,
+   "roots": 200,
+   "policies": {
+    "SF": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2153587,
+     "mcols": 0,
+     "passes": 813460,
+     "ft_bytes": 7742478336,
+     "sources": {
+      "finny": 35438,
+      "chain": 726824,
+      "hybrid": 17066
+     },
+     "cols_per_eval": 5.52677948180997,
+     "passes_per_eval": 2.087593413812926,
+     "ft_bytes_per_eval": 19869.627001724562,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.024316306979460692,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 4589.0,
+     "counterfactual_sf_colequiv": 3665853.0
+    },
+    "SFmin": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2106196,
+     "mcols": 0,
+     "passes": 779328,
+     "ft_bytes": 7505616896,
+     "sources": {
+      "refresh": 3690,
+      "chain": 726824,
+      "finny": 48814
+     },
+     "cols_per_eval": 5.405159316744682,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 19261.76628069311,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.025083678344991832,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 4115.0,
+     "counterfactual_sf_colequiv": 3664852.0
+    },
+    "VN_noC4": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2104153,
+     "mcols": 0,
+     "passes": 779328,
+     "ft_bytes": 7501432832,
+     "sources": {
+      "refresh": 3690,
+      "chain": 724034,
+      "finny": 51604
+     },
+     "cols_per_eval": 5.399916338178533,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 19251.028660589636,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.02509766923418611,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 3335.0,
+     "counterfactual_sf_colequiv": 3666144.0
+    },
+    "VN": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2106360,
+     "mcols": 0,
+     "passes": 779328,
+     "ft_bytes": 7505952768,
+     "sources": {
+      "refresh": 3667,
+      "chain": 724037,
+      "finny": 51489,
+      "ancestor": 135
+     },
+     "cols_per_eval": 5.405580192165558,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 19262.628233555064,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.025082555915171993,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 3891.0,
+     "counterfactual_sf_colequiv": 3668907.0
+    }
+   },
+   "SF_finny_cost_at_table_change": {
+    "n": 35438,
+    "mean": 5.451267001523788,
+    "p50": 4.0,
+    "p95": 13.0,
+    "max": 32.0
+   },
+   "SF_hybrid_cost": {
+    "n": 17066,
+    "mean": 8.017461619594515,
+    "p50": 6.0,
+    "p95": 24.0,
+    "max": 42.0
+   },
+   "woodbury_subset": {
+    "rK=4,mu=1.0,wb_mult=2": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2053006,
+     "mcols": 144840,
+     "passes": 779328,
+     "ft_bytes": 7693316096,
+     "sources": {
+      "refresh": 2079,
+      "chain": 725003,
+      "finny": 33994,
+      "woodbury": 18105,
+      "ancestor": 147
+     },
+     "cols_per_eval": 5.268657099449783,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 19743.46127946128,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.024471694344898525,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 222876.0,
+     "counterfactual_sf_colequiv": 3979378.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.6143952762318448
+    },
+    "rK=16,mu=1.0,wb_mult=1": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2065037,
+     "mcols": 195232,
+     "passes": 779328,
+     "ft_bytes": 7821158400,
+     "sources": {
+      "refresh": 2596,
+      "chain": 724798,
+      "finny": 39585,
+      "woodbury": 12202,
+      "ancestor": 147
+     },
+     "cols_per_eval": 5.299532417672662,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 20071.544715447155,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.024071687385848112,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 92632.0,
+     "counterfactual_sf_colequiv": 3911557.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.4140762861408986
+    },
+    "rK=16,mu=1.0,wb_mult=2": {
+     "evals": 389664,
+     "builds": 779328,
+     "cols": 2106360,
+     "mcols": 0,
+     "passes": 779328,
+     "ft_bytes": 7505952768,
+     "sources": {
+      "refresh": 3667,
+      "chain": 724037,
+      "finny": 51489,
+      "ancestor": 135
+     },
+     "cols_per_eval": 5.405580192165558,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 19262.628233555064,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.025082555915171993,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 3891.0,
+     "counterfactual_sf_colequiv": 3668907.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.0
+    }
+   }
+  },
+  "trees/lazy": {
+   "nodes": 389664,
+   "roots": 200,
+   "policies": {
+    "SF": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2157968,
+     "mcols": 0,
+     "passes": 794786,
+     "ft_bytes": 7674961920,
+     "sources": {
+      "finny": 72998,
+      "chain": 660144,
+      "hybrid": 13618
+     },
+     "cols_per_eval": 5.77954898494831,
+     "passes_per_eval": 2.1286249933044084,
+     "ft_bytes_per_eval": 20555.364293748997,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.024530216822235388,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 30891.0,
+     "counterfactual_sf_colequiv": 3654067.0
+    },
+    "SFmin": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2117418,
+     "mcols": 0,
+     "passes": 767550,
+     "ft_bytes": 7480356864,
+     "sources": {
+      "refresh": 3718,
+      "chain": 660144,
+      "finny": 82898
+     },
+     "cols_per_eval": 5.670946488831754,
+     "passes_per_eval": 2.0556805399325087,
+     "ft_bytes_per_eval": 20034.165900690987,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.0251683821270696,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 31235.0,
+     "counterfactual_sf_colequiv": 3652518.0
+    },
+    "VN_noC4": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2169745,
+     "mcols": 0,
+     "passes": 760153,
+     "ft_bytes": 7557224448,
+     "sources": {
+      "refresh": 3760,
+      "finny": 154701,
+      "chain": 588299
+     },
+     "cols_per_eval": 5.811090577963469,
+     "passes_per_eval": 2.035869623439927,
+     "ft_bytes_per_eval": 20240.035481279127,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.024912384341029433,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 407985.0,
+     "counterfactual_sf_colequiv": 4098036.0
+    },
+    "VN": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2625950,
+     "mcols": 0,
+     "passes": 746760,
+     "ft_bytes": 8436674560,
+     "sources": {
+      "refresh": 3711,
+      "finny": 153939,
+      "chain": 431200,
+      "ancestor": 157910
+     },
+     "cols_per_eval": 7.0329155284160905,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22595.411002196153,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.022315484455524618,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 948834.0,
+     "counterfactual_sf_colequiv": 5068304.0
+    }
+   },
+   "SF_finny_cost_at_table_change": {
+    "n": 72998,
+    "mean": 4.390092879256966,
+    "p50": 4.0,
+    "p95": 10.0,
+    "max": 32.0
+   },
+   "SF_hybrid_cost": {
+    "n": 13618,
+    "mean": 8.041415773241297,
+    "p50": 7.0,
+    "p95": 23.0,
+    "max": 42.0
+   },
+   "woodbury_subset": {
+    "rK=4,mu=1.0,wb_mult=2": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2640643,
+     "mcols": 231456,
+     "passes": 746760,
+     "ft_bytes": 8940787712,
+     "sources": {
+      "refresh": 2331,
+      "finny": 123863,
+      "chain": 432568,
+      "woodbury": 28932,
+      "ancestor": 159066
+     },
+     "cols_per_eval": 7.072266859499705,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23945.545321120575,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.02105725871863761,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 1276009.0,
+     "counterfactual_sf_colequiv": 5641628.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.5356102822218227
+    },
+    "rK=16,mu=1.0,wb_mult=1": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2625639,
+     "mcols": 235184,
+     "passes": 746760,
+     "ft_bytes": 8917694464,
+     "sources": {
+      "refresh": 2942,
+      "finny": 138647,
+      "chain": 431947,
+      "woodbury": 14699,
+      "ancestor": 158525
+     },
+     "cols_per_eval": 7.032082596818255,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 23883.69613798275,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.021111788563739697,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 1054169.0,
+     "counterfactual_sf_colequiv": 5408512.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.28250943735394574
+    },
+    "rK=16,mu=1.0,wb_mult=2": {
+     "evals": 373380,
+     "builds": 746760,
+     "cols": 2625950,
+     "mcols": 0,
+     "passes": 746760,
+     "ft_bytes": 8436674560,
+     "sources": {
+      "refresh": 3711,
+      "finny": 153939,
+      "chain": 431200,
+      "ancestor": 157910
+     },
+     "cols_per_eval": 7.0329155284160905,
+     "passes_per_eval": 2.0,
+     "ft_bytes_per_eval": 22595.411002196153,
+     "psi_lanes_total": 62756160,
+     "psi_bytes_total": 188268480,
+     "psi_bytes_over_ft_bytes": 0.022315484455524618,
+     "counterfactual_full_le_sf_all": true,
+     "counterfactual_saving_colequiv": 948834.0,
+     "counterfactual_sf_colequiv": 5068304.0,
+     "woodbury_chosen_fraction_of_own_king_events": 0.0
+    }
+   }
+  }
+ },
+ "seconds": 632.759069442749
+}

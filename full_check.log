@@ -1,0 +1,311 @@
+C:\Users\user\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\modal\_utils\async_utils.py:42: DeprecationWarning: 'asyncio.WindowsSelectorEventLoopPolicy' is deprecated and slated for removal in Python 3.16
+  asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+C:\Users\user\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\modal\_utils\async_utils.py:42: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+  asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+✓ Initialized. View run at 
+https://modal.com/apps/testhello006/main/ap-euHLB1twSH6o2uvJjkdJ7X
+✓ Created objects.
+├── 🔨 Created mount C:\Users\user\vnnue\lean\modal_check.py
+└── 🔨 Created function check.
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+Decompressing 405 already-cached file(s) (8626 already decompressed)
+No files to download
+Decompressed 405 already-cached file(s)
+Completed successfully in 13692 ms!
+⚠ [9047/9056] Built VNNUE.Basic (20s)
+warning: VNNUE/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [9048/9056] Built VNNUE.DeltaMonoid (16s)
+warning: VNNUE/DeltaMonoid.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: VNNUE/DeltaMonoid.lean:49:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+⚠ [9049/9056] Built VNNUE.Accumulator (16s)
+warning: VNNUE/Accumulator.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [9050/9056] Built VNNUE.Complexity (16s)
+warning: VNNUE/Complexity.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: VNNUE/Complexity.lean:64:28: Variable name `i` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _i
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: VNNUE/Complexity.lean:103:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+⚠ [9051/9056] Built VNNUE.Symmetry (16s)
+warning: VNNUE/Symmetry.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: VNNUE/Symmetry.lean:126:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+warning: VNNUE/Symmetry.lean:126:19: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+warning: VNNUE/Symmetry.lean:128:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+warning: VNNUE/Symmetry.lean:128:19: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+warning: VNNUE/Symmetry.lean:187:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+⚠ [9052/9056] Built VNNUE.Quantization (17s)
+warning: VNNUE/Quantization.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [9053/9056] Built VNNUE.Refresh (17s)
+warning: VNNUE/Refresh.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+⚠ [9054/9056] Built VNNUE.Interaction (18s)
+warning: VNNUE/Interaction.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: VNNUE/Interaction.lean:65:12: This simp argument is unused:
+  h1
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [h2]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:68:14: This simp argument is unused:
+  h1
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [h2, h3, h4]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:168:53: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hb]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:341:16: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [h1, hab]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:343:18: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [h2, Ne.symm hab]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:344:22: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [h1, h2, zero_pow hk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:418:4: This simp argument is unused:
+  Matrix.head_cons
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [f, Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: VNNUE/Interaction.lean:429:4: This simp argument is unused:
+  Matrix.head_cons
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [q, psum, Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [9055/9056] Built VNNUE (9.5s)
+Build completed successfully (9056 jobs).
+info: vnnue: no previous manifest, creating one from scratch
+info: toolchain not updated; already up-to-date
+info: plausible: materializing new dependency
+info: plausible: fetching revision 'dfa4f38190d07c37e315953e08b90fe2d95b3c24' from https://github.com/leanprover-community/plausible
+info: plausible: checking out revision 'dfa4f38190d07c37e315953e08b90fe2d95b3c24'
+info: LeanSearchClient: materializing new dependency
+info: LeanSearchClient: fetching revision 'd6b4c7be5be75ec4917c873ac50c756dc1436372' from https://github.com/leanprover-community/LeanSearchClient
+info: LeanSearchClient: checking out revision 'd6b4c7be5be75ec4917c873ac50c756dc1436372'
+info: importGraph: materializing new dependency
+info: importGraph: fetching revision 'a41f0e9a4dea23188ea9cc1c41ac9f8bbafe0b93' from https://github.com/leanprover-community/import-graph
+info: importGraph: checking out revision 'a41f0e9a4dea23188ea9cc1c41ac9f8bbafe0b93'
+info: proofwidgets: materializing new dependency
+info: proofwidgets: fetching revision 'df72b022e558978a1c50264cfc4d7fec86fa8e04' from https://github.com/leanprover-community/ProofWidgets4
+info: proofwidgets: checking out revision 'df72b022e558978a1c50264cfc4d7fec86fa8e04'
+info: aesop: materializing new dependency
+info: aesop: fetching revision '4a174c490d8707121c4a9290800489f105d85e07' from https://github.com/leanprover-community/aesop
+info: aesop: checking out revision '4a174c490d8707121c4a9290800489f105d85e07'
+info: Qq: materializing new dependency
+info: Qq: fetching revision 'dce0ad79c486cb1fb504af04f953c3466b0c6db8' from https://github.com/leanprover-community/quote4
+info: Qq: checking out revision 'dce0ad79c486cb1fb504af04f953c3466b0c6db8'
+info: batteries: materializing new dependency
+info: batteries: fetching revision '66e469188fe07963e5cf666c7d4433f45b8131c5' from https://github.com/leanprover-community/batteries
+info: batteries: checking out revision '66e469188fe07963e5cf666c7d4433f45b8131c5'
+info: Cli: materializing new dependency
+info: Cli: fetching revision 'c24fe6078c630e89b489bffe59b3e20ac30d12c8' from https://github.com/leanprover/lean4-cli
+info: Cli: checking out revision 'c24fe6078c630e89b489bffe59b3e20ac30d12c8'
+info: mathlib: running post-update hooks
+✔ [14/42] Built Batteries.Tactic.OpenPrivate (1.5s)
+✔ [41/42] Built Batteries.Tactic.OpenPrivate:c.o (1.3s)
+
+---- AXIOM AUDIT ----
+'VNNUE.Phi_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accV_add_delta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.Phi_eq_sum_supp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_perm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_append' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_group' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accS_eq_accV' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accS_any_source' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.colOps_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.Phi_delta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accV_add_delta_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accV_add_delta_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_eq_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_eq_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accS_any_source_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.accS_any_source_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.castLanes_accV_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ind_apply' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ind_of_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ind_of_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ind_isBinary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.delta_apply' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.mem_supp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_nil' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldDeltas_cons' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.dec16_intCast_of_inI16' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.sat16_of_inI16' depends on axioms: [propext, Quot.sound]
+'VNNUE.sat16_eq_clampZ' does not depend on any axioms
+'VNNUE.psi_overhead' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_overhead_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_overhead_instance' depends on axioms: [propext, Quot.sound]
+'VNNUE.psi_overhead_instance_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.inf'_superset_cx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.king_event_total' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ski_upper' depends on axioms: [propext, Quot.sound]
+'VNNUE.ski_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.sum_map_traffic_cx' depends on axioms: [propext]
+'VNNUE.fused_traffic' depends on axioms: [propext, Quot.sound]
+'VNNUE.fused_one_pass' depends on axioms: [propext, Quot.sound]
+'VNNUE.delta_telescope' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ind_add_delta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.supp_delta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.supp_add_subset' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.card_supp_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.colOps_triangle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.colOps_comm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.colOps_image' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.vn_sum_sum_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.vn_sum3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.e2_eq_sum_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.distinct_ind' depends on axioms: [propext]
+'VNNUE.three_dvd_cube_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ng2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_lane' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_even' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_heads' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psum_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psum_single' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_add_feature' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_remove_feature' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ng3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ng3_six_dvd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ng3_binary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.mix_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.ng3_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.e_lane_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psum_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.lane_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.pair_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_universal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_zero_heads' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.fc0_embed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.affine_second_diff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_not_affine' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.quant_Phi_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.quant_foldDeltas_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.quant_accV_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.le_Mplus' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.Mminus_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.Mplus_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.Mminus_nonpos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.castLanes_accV' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.dec16_intCast' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.wrap_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.valMinAbs_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.valMinAbs_neg32768' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.sat16_not_assoc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.sat16_path_dependent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.slot_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.card_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.abs_sum_le_card_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.global_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.P1_numeric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.P2_numeric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.P1_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.P2_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.pmaddubsw_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.pmaddubsw_unsafe_255' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.quant_sum_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.king_transition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.king_transition_y_update' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.factored_eq_merged' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.lowrank_generalizes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.lowrank_proper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.lowrank_proper_rat_2_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.king_transition_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.king_transition_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.factored_eq_merged_int' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.factored_eq_merged_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.inf'_superset' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.never_worse' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.never_worse_general' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.never_worse_dominated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.refresh_accS_any_source' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.hybrid_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.hybrid_correct_impl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.hybrid_correct_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.klein_squares' depends on axioms: [propext, Quot.sound]
+'VNNUE.king_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.mirH_file' depends on axioms: [propext, Quot.sound]
+'VNNUE.king_half_onto' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.sigH_sigH' depends on axioms: [propext, Quot.sound]
+'VNNUE.sigC_sigC' depends on axioms: [propext, Quot.sound]
+'VNNUE.sigH_sigC' depends on axioms: [propext, Quot.sound]
+'VNNUE.canon_eq' depends on axioms: [propext, Quot.sound]
+'VNNUE.fin2_rev_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.normC_sigH' depends on axioms: [propext, Quot.sound]
+'VNNUE.normC_sigC' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.normC_fst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.foldH_sigH' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.feat_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.canon_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.canon_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.canon_fix' depends on axioms: [propext, Quot.sound]
+'VNNUE.canon_image_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.inOrb_symm' depends on axioms: [propext, Quot.sound]
+'VNNUE.inOrb_trans' depends on axioms: [propext, Quot.sound]
+'VNNUE.canon_mem_orbit' depends on axioms: [propext, Quot.sound]
+'VNNUE.canon_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.acc_equivariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.acc_equivariant_accV' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_shared' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.psi_shared_sigC' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.regular_rep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.isotypic' depends on axioms: [propext, Quot.sound]
+'VNNUE.isotypic_action' depends on axioms: [propext, Classical.choice, Quot.sound]
+'VNNUE.isotypic_inj' depends on axioms: [propext, Quot.sound]
+'VNNUE.isotypic_not_surj' depends on axioms: [propext, Quot.sound]
+
+RESULT: OK
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/testhello006/main/ap-euHLB1twSH6o2uvJjkdJ7X

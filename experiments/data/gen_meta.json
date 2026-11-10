@@ -1,0 +1,15 @@
+{
+ "lichess_nodes": 202984,
+ "lichess_games": 3000,
+ "positions": 175984,
+ "selfplay_nodes": 2440,
+ "tree_nodes": 389664,
+ "tree_roots": 200,
+ "tree_aborted_at_cap": 116,
+ "search": {
+  "depth": 3,
+  "qs_max": 4,
+  "node_cap": 2500
+ },
+ "seconds": 460.0369040966034
+}

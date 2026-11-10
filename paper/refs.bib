@@ -1,0 +1,462 @@
+% ---------------- History of computer chess and game search ----------------
+@inproceedings{zermelo1913,
+  author    = {Zermelo, Ernst},
+  title     = {{\"U}ber eine {A}nwendung der {M}engenlehre auf die {T}heorie des {S}chachspiels},
+  booktitle = {Proceedings of the Fifth International Congress of Mathematicians (Cambridge, 1912)},
+  volume    = {2},
+  pages     = {501--504},
+  publisher = {Cambridge University Press},
+  year      = {1913}
+}
+
+@article{vonneumann1928,
+  author  = {von Neumann, John},
+  title   = {Zur {T}heorie der {G}esellschaftsspiele},
+  journal = {Mathematische Annalen},
+  volume  = {100},
+  pages   = {295--320},
+  year    = {1928},
+  doi     = {10.1007/BF01448847}
+}
+
+@article{shannon1950,
+  author  = {Shannon, Claude E.},
+  title   = {Programming a Computer for Playing Chess},
+  journal = {Philosophical Magazine, Series 7},
+  volume  = {41},
+  number  = {314},
+  pages   = {256--275},
+  year    = {1950},
+  doi     = {10.1080/14786445008521796}
+}
+
+@incollection{turing1953,
+  author    = {Turing, Alan M.},
+  title     = {Digital Computers Applied to Games},
+  booktitle = {Faster Than Thought},
+  editor    = {Bowden, B. V.},
+  publisher = {Pitman},
+  address   = {London},
+  year      = {1953}
+}
+
+@article{knuth1975,
+  author  = {Knuth, Donald E. and Moore, Ronald W.},
+  title   = {An Analysis of Alpha-Beta Pruning},
+  journal = {Artificial Intelligence},
+  volume  = {6},
+  number  = {4},
+  pages   = {293--326},
+  year    = {1975},
+  doi     = {10.1016/0004-3702(75)90019-3}
+}
+
+@techreport{zobrist1970,
+  author      = {Zobrist, Albert L.},
+  title       = {A New Hashing Method with Application for Game Playing},
+  institution = {Computer Sciences Department, University of Wisconsin},
+  type        = {Technical Report},
+  number      = {88},
+  year        = {1970}
+}
+
+@article{campbell2002,
+  author  = {Campbell, Murray and Hoane, Jr., A. Joseph and Hsu, Feng-hsiung},
+  title   = {Deep {B}lue},
+  journal = {Artificial Intelligence},
+  volume  = {134},
+  number  = {1--2},
+  pages   = {57--83},
+  year    = {2002},
+  doi     = {10.1016/S0004-3702(01)00129-1}
+}
+
+@article{samuel1959,
+  author  = {Samuel, Arthur L.},
+  title   = {Some Studies in Machine Learning Using the Game of Checkers},
+  journal = {IBM Journal of Research and Development},
+  volume  = {3},
+  number  = {3},
+  pages   = {210--229},
+  year    = {1959}
+}
+
+@article{tesauro1995,
+  author  = {Tesauro, Gerald},
+  title   = {Temporal Difference Learning and {TD-Gammon}},
+  journal = {Communications of the ACM},
+  volume  = {38},
+  number  = {3},
+  pages   = {58--68},
+  year    = {1995}
+}
+
+@article{silver2018,
+  author  = {Silver, David and Hubert, Thomas and Schrittwieser, Julian and Antonoglou, Ioannis and Lai, Matthew and Guez, Arthur and Lanctot, Marc and Sifre, Laurent and Kumaran, Dharshan and Graepel, Thore and Lillicrap, Timothy and Simonyan, Karen and Hassabis, Demis},
+  title   = {A General Reinforcement Learning Algorithm that Masters Chess, Shogi, and {Go} through Self-Play},
+  journal = {Science},
+  volume  = {362},
+  number  = {6419},
+  pages   = {1140--1144},
+  year    = {2018}
+}
+
+@article{wald1945,
+  author  = {Wald, Abraham},
+  title   = {Sequential Tests of Statistical Hypotheses},
+  journal = {Annals of Mathematical Statistics},
+  volume  = {16},
+  number  = {2},
+  pages   = {117--186},
+  year    = {1945}
+}
+
+% ---------------- NNUE and Stockfish ----------------
+@misc{nasu2018,
+  author       = {Nasu, Yu},
+  title        = {Efficiently Updatable Neural-Network-based Evaluation Functions for Computer Shogi},
+  howpublished = {Appeal document, 28th World Computer Shogi Championship (in Japanese). \url{https://www.apply.computer-shogi.org/wcsc28/appeal/the_end_of_genesis_T.N.K.evolution_turbo_type_D/nnue.pdf}; English translation (GitHub user asdfjkl, D.~Klein), \url{https://github.com/asdfjkl/nnue}, retypeset 2025},
+  year         = {2018}
+}
+
+@misc{nnuepytorchdocs,
+  author       = {{Official Stockfish / nnue-pytorch contributors}},
+  title        = {{NNUE} (nnue-pytorch documentation, docs/nnue.md)},
+  howpublished = {\url{https://github.com/official-stockfish/nnue-pytorch/blob/master/docs/nnue.md}},
+  note         = {Accessed 2026-11-09},
+  year         = {2020--2026}
+}
+
+@misc{sfsource,
+  author       = {{Stockfish developers}},
+  title        = {Stockfish source code, src/nnue (nnue\_architecture.h, nnue\_feature\_transformer.h, nnue\_accumulator.cpp, features/k32h3.h)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/tree/7cdd5e89a39fe3071b67d91c7bb07d712044bf76/src/nnue}},
+  note         = {Master at commit 7cdd5e8 (6 November 2026), the tip of master when accessed on 2026-11-09},
+  year         = {2026}
+}
+
+@misc{sffinny,
+  author       = {gab8192},
+  title        = {Implement accumulator refresh table (``{F}inny tables''), {S}tockfish {PR} \#5183, commit 49ef4c9},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/commit/49ef4c935a5cb0e4d94096e6354caa06b36b3e3c}},
+  year         = {2024},
+  note         = {Committed directly to master (closed with label `to be merged')}
+}
+
+@misc{sfpr5988,
+  author       = {ces42},
+  title        = {Introduce double incremental accumulator updates, {S}tockfish {PR} \#5988 (committed as fda269a)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/pull/5988}},
+  year         = {2025},
+  note         = {Committed directly to master (closed with label `to be merged')}
+}
+
+@misc{sfthreats,
+  author       = {sscg13 and others},
+  title        = {Update {NNUE} architecture to {SFNNv10} with Threat Inputs and net nn-49c1193b131c.nnue, {S}tockfish {PR} \#6411 (commit 8e5392d)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/commit/8e5392d79a36aba5b997cf6fb590937e3e624e80}},
+  year         = {2025}
+}
+
+@misc{pr398,
+  author       = {sscg13},
+  title        = {Compress threat indexing, update feature set name to {F}ull {T}hreats v2, nnue-pytorch {PR} \#398},
+  howpublished = {\url{https://github.com/official-stockfish/nnue-pytorch/pull/398}},
+  note         = {Closed without merging, 2026-09-26},
+  year         = {2026}
+}
+
+@misc{pr563,
+  author       = {Xu, Shawn},
+  title        = {{K32H3} \& Refactors, nnue-pytorch {PR} \#563},
+  howpublished = {\url{https://github.com/official-stockfish/nnue-pytorch/pull/563}},
+  year         = {2026}
+}
+
+@misc{pr5149,
+  author       = {Viren6},
+  title        = {Update {NNUE} architecture to {SFNNv9} with larger {L1} size of 3072, {S}tockfish {PR} \#5149},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/pull/5149}},
+  year         = {2024},
+  note         = {Committed directly to master (closed with label `to be merged')}
+}
+
+@misc{pr4915,
+  author       = {Xu, Linmiao},
+  title        = {Dual {NNUE} with {L1}-128 smallnet, {S}tockfish {PR} \#4915},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/pull/4915}},
+  year         = {2024},
+  note         = {Committed directly to master (closed with label `to be merged')}
+}
+
+@misc{sfreleases,
+  author       = {{Stockfish team}},
+  title        = {Stockfish releases (including {S}tockfish 18 and 19)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/releases}},
+  year         = {2026}
+}
+
+@misc{cpwnnue,
+  author       = {{Chessprogramming Wiki}},
+  title        = {Stockfish {NNUE}},
+  howpublished = {\url{https://www.chessprogramming.org/Stockfish_NNUE}},
+  note         = {Accessed 2026-11-09},
+  year         = {2026}
+}
+
+@misc{bullet,
+  author       = {jw1912 and contributors},
+  title        = {bullet: a specialised {ML} library for training {NNUE} networks},
+  howpublished = {\url{https://github.com/jw1912/bullet}},
+  year         = {2026}
+}
+
+@misc{fishtest,
+  author       = {{Stockfish developers}},
+  title        = {Fishtest: distributed testing framework for {S}tockfish},
+  howpublished = {\url{https://tests.stockfishchess.org}},
+  year         = {2026}
+}
+
+@misc{lichessdb,
+  author       = {{lichess.org}},
+  title        = {lichess.org open database (standard rated games, January 2013)},
+  howpublished = {\url{https://database.lichess.org}},
+  year         = {2013}
+}
+
+% ---------------- Incremental computation ----------------
+@article{paige1982,
+  author  = {Paige, Robert and Koenig, Shaye},
+  title   = {Finite Differencing of Computable Expressions},
+  journal = {ACM Transactions on Programming Languages and Systems},
+  volume  = {4},
+  number  = {3},
+  pages   = {402--454},
+  year    = {1982},
+  doi     = {10.1145/357172.357177}
+}
+
+@inproceedings{acar2002,
+  author    = {Acar, Umut A. and Blelloch, Guy E. and Harper, Robert},
+  title     = {Adaptive Functional Programming},
+  booktitle = {Proceedings of the 29th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL)},
+  pages     = {247--259},
+  year      = {2002}
+}
+
+@inproceedings{cai2014,
+  author    = {Cai, Yufei and Giarrusso, Paolo G. and Rendel, Tillmann and Ostermann, Klaus},
+  title     = {A Theory of Changes for Higher-Order Languages: Incrementalizing $\lambda$-Calculi by Static Differentiation},
+  booktitle = {Proceedings of the 35th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI)},
+  pages     = {145--155},
+  year      = {2014},
+  doi       = {10.1145/2594291.2594304}
+}
+
+@article{budiu2023,
+  author  = {Budiu, Mihai and Chajed, Tej and McSherry, Frank and Ryzhyk, Leonid and Tannen, Val},
+  title   = {{DBSP}: Automatic Incremental View Maintenance for Rich Query Languages},
+  journal = {Proceedings of the VLDB Endowment},
+  volume  = {16},
+  number  = {7},
+  pages   = {1601--1614},
+  year    = {2023},
+  doi     = {10.14778/3587136.3587137}
+}
+
+@inproceedings{neil2017,
+  author    = {Neil, Daniel and Lee, Jun Haeng and Delbruck, Tobi and Liu, Shih-Chii},
+  title     = {Delta Networks for Optimized Recurrent Network Computation},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {70},
+  pages     = {2584--2593},
+  year      = {2017}
+}
+
+@inproceedings{parger2022,
+  author    = {Parger, Mathias and Tang, Chengcheng and Twigg, Christopher D. and Keskin, Cem and Wang, Robert and Steinberger, Markus},
+  title     = {{DeltaCNN}: End-to-End {CNN} Inference of Sparse Frame Differences in Videos},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2022}
+}
+
+% ---------------- Linear algebra, symmetric functions, interactions ----------------
+@article{sherman1950,
+  author  = {Sherman, Jack and Morrison, Winifred J.},
+  title   = {Adjustment of an Inverse Matrix Corresponding to a Change in One Element of a Given Matrix},
+  journal = {Annals of Mathematical Statistics},
+  volume  = {21},
+  number  = {1},
+  pages   = {124--127},
+  year    = {1950},
+  doi     = {10.1214/aoms/1177729893}
+}
+
+@techreport{woodbury1950,
+  author      = {Woodbury, Max A.},
+  title       = {Inverting Modified Matrices},
+  institution = {Statistical Research Group, Princeton University},
+  type        = {Memorandum Report},
+  number      = {42},
+  year        = {1950}
+}
+
+@book{macdonald1995,
+  author    = {Macdonald, Ian G.},
+  title     = {Symmetric Functions and {H}all Polynomials},
+  edition   = {2nd},
+  publisher = {Oxford University Press},
+  year      = {1995}
+}
+
+@inproceedings{rendle2010,
+  author    = {Rendle, Steffen},
+  title     = {Factorization Machines},
+  booktitle = {Proceedings of the 10th IEEE International Conference on Data Mining (ICDM)},
+  pages     = {995--1000},
+  year      = {2010},
+  doi       = {10.1109/ICDM.2010.127}
+}
+
+@inproceedings{blondel2016,
+  author    = {Blondel, Mathieu and Fujino, Akinori and Ueda, Naonori and Ishihata, Masakazu},
+  title     = {Higher-Order Factorization Machines},
+  booktitle = {Advances in Neural Information Processing Systems 29 (NeurIPS)},
+  year      = {2016}
+}
+
+@article{kolda2009,
+  author  = {Kolda, Tamara G. and Bader, Brett W.},
+  title   = {Tensor Decompositions and Applications},
+  journal = {SIAM Review},
+  volume  = {51},
+  number  = {3},
+  pages   = {455--500},
+  year    = {2009}
+}
+
+@inproceedings{hu2022lora,
+  author    = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
+  title     = {{LoRA}: Low-Rank Adaptation of Large Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022},
+  note      = {arXiv:2106.09685}
+}
+
+% ---------------- Symmetry ----------------
+@inproceedings{cohen2016,
+  author    = {Cohen, Taco S. and Welling, Max},
+  title     = {Group Equivariant Convolutional Networks},
+  booktitle = {Proceedings of the 33rd International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {48},
+  pages     = {2990--2999},
+  year      = {2016}
+}
+
+@inproceedings{ravanbakhsh2017,
+  author    = {Ravanbakhsh, Siamak and Schneider, Jeff and P{\'o}czos, Barnab{\'a}s},
+  title     = {Equivariance Through Parameter-Sharing},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning (ICML)},
+  series    = {PMLR},
+  volume    = {70},
+  pages     = {2892--2901},
+  year      = {2017}
+}
+
+@inproceedings{zaheer2017,
+  author    = {Zaheer, Manzil and Kottur, Satwik and Ravanbakhsh, Siamak and P{\'o}czos, Barnab{\'a}s and Salakhutdinov, Ruslan and Smola, Alexander},
+  title     = {Deep Sets},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NeurIPS)},
+  year      = {2017}
+}
+
+% ---------------- Quantization and hardware ----------------
+@inproceedings{jacob2018,
+  author    = {Jacob, Benoit and Kligys, Skirmantas and Chen, Bo and Zhu, Menglong and Tang, Matthew and Howard, Andrew and Adam, Hartwig and Kalenichenko, Dmitry},
+  title     = {Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {2704--2713},
+  year      = {2018}
+}
+
+@book{higham2002,
+  author    = {Higham, Nicholas J.},
+  title     = {Accuracy and Stability of Numerical Algorithms},
+  edition   = {2nd},
+  publisher = {SIAM},
+  address   = {Philadelphia},
+  year      = {2002}
+}
+
+@article{williams2009,
+  author  = {Williams, Samuel and Waterman, Andrew and Patterson, David},
+  title   = {Roofline: An Insightful Visual Performance Model for Multicore Architectures},
+  journal = {Communications of the ACM},
+  volume  = {52},
+  number  = {4},
+  pages   = {65--76},
+  year    = {2009}
+}
+
+% ---------------- Online algorithms ----------------
+@article{karlin1988,
+  author  = {Karlin, Anna R. and Manasse, Mark S. and Rudolph, Larry and Sleator, Daniel D.},
+  title   = {Competitive Snoopy Caching},
+  journal = {Algorithmica},
+  volume  = {3},
+  number  = {1},
+  pages   = {79--119},
+  year    = {1988}
+}
+
+% ---------------- Formal methods ----------------
+@inproceedings{mathlib2020,
+  author    = {{The mathlib Community}},
+  title     = {The {L}ean Mathematical Library},
+  booktitle = {Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP)},
+  pages     = {367--381},
+  year      = {2020},
+  doi       = {10.1145/3372885.3373824}
+}
+
+@inproceedings{demoura2021,
+  author    = {de Moura, Leonardo and Ullrich, Sebastian},
+  title     = {The {L}ean 4 Theorem Prover and Programming Language},
+  booktitle = {Automated Deduction -- CADE 28},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {12699},
+  pages     = {625--635},
+  publisher = {Springer},
+  year      = {2021},
+  doi       = {10.1007/978-3-030-79876-5_37}
+}
+
+% ---------------- added in revision ----------------
+@misc{sfnnv18,
+  author       = {TonyCongqianWang},
+  title        = {Update {NNUE} architecture to {SFNNv18} and net nn-c9e480e92425.nnue ({K32Q2}), {S}tockfish {PR} \#7215 (commit 5c4cef0)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/commit/5c4cef0bfe61fb3249178b2bcf21f5673557efe7}},
+  year         = {2026}
+}
+@misc{sf11,
+  author       = {{Stockfish developers}},
+  title        = {Stockfish 11 source code (tag sf\_11), src/material.cpp (material-imbalance polynomial)},
+  howpublished = {\url{https://github.com/official-stockfish/Stockfish/blob/sf_11/src/material.cpp}},
+  year         = {2020}
+}
+@article{kaufman1999,
+  author  = {Kaufman, Larry},
+  title   = {The Evaluation of Material Imbalances},
+  journal = {Chess Life},
+  month   = mar,
+  year    = {1999}
+}
+@book{borodin1998,
+  author    = {Borodin, Allan and El-Yaniv, Ran},
+  title     = {Online Computation and Competitive Analysis},
+  publisher = {Cambridge University Press},
+  year      = {1998}
+}

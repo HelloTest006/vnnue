@@ -1,0 +1,257 @@
+\appendix
+
+%=====================================================================
+\section{Lean development overview}\label{app:lean}
+%=====================================================================
+
+\paragraph{Toolchain.}
+The development uses Lean \texttt{leanprover/lean4:v4.35.0} and Mathlib tag \texttt{v4.35.0}, with a Lake project \texttt{vnnue} and library \texttt{VNNUE}.
+The root file \texttt{VNNUE.lean} imports the eight modules.
+\texttt{Basic} imports only Mathlib, and every other module imports only Mathlib and \texttt{VNNUE.Basic}.
+For this reason a few facts are re-proved locally under distinct names: \lnm{quant_foldDeltas_eq} in \texttt{Quantization}, \lnm{refresh_accS_any_source} in \texttt{Refresh}, and \lnm{inf'_superset_cx} in \texttt{Complexity}.
+
+\begin{table}[h]
+\centering\small
+\caption{Modules. ``Decls'' counts \texttt{theorem}/\texttt{lemma} declarations in the source; ``audited'' counts those whose \texttt{\#print axioms} output appears in the build log.}\label{tab:modules}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Module & Spec IDs & Lines & Decls & Audited\\
+\midrule
+\texttt{Basic} & definitions + sanity lemmas & 131 & 11 & 11\\
+\texttt{Accumulator} & T1--T3 & 187 & 18 & 18\\
+\texttt{DeltaMonoid} & T4--T6 & 96 & 8 & 8\\
+\texttt{Quantization} & T7--T11 & 289 & 25 & 25\\
+\texttt{Interaction} & T12--T18 & 432 & 27 & 27\\
+\texttt{Symmetry} & T19--T22 & 359 & 31 & 31\\
+\texttt{Refresh} & T23--T24 & 254 & 18 & 18\\
+\texttt{Complexity} & T25, A1, A2 & 151 & 11 & 11\\
+\texttt{VNNUE.lean} (root) & imports & 8 & 0 & 0\\
+\midrule
+Total & & 1,907 & 149 & 149\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Axiom audit.}
+The checker \texttt{lean/modal\_check.py} runs \texttt{lake build} on a Modal CPU container with the Mathlib cache.
+It then writes an audit file containing \texttt{\#print axioms} for every \texttt{theorem}/\texttt{lemma} declaration (including those preceded by an attribute such as \texttt{@[simp]}), and compiles that file.
+The resulting log (\texttt{full\_check.log}) ends with \texttt{RESULT: OK}.
+It contains 149 audit lines, one per theorem declaration, with the following breakdown:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item 127 declarations depend on \{\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}\};
+\item 19 on \{\texttt{propext}, \texttt{Quot.sound}\};
+\item 2 on \{\texttt{propext}\};
+\item 1 (\lnm{sat16_eq_clampZ}, proved by \texttt{rfl}) on no axioms.
+\end{itemize}
+So all 149 theorem declarations use at most the three standard axioms, and none uses \texttt{sorryAx}.
+The build log shows only linter warnings: the \texttt{module}-system hint for files that import Mathlib, deprecations of \texttt{push\_neg}, \texttt{if\_pos} and \texttt{if\_neg}, eight unused-simp-argument warnings (in \texttt{Interaction}), and one unused variable.
+No \texttt{native\_decide} is used anywhere.
+
+\paragraph{Documented deviations from the specification.}
+(1)~\texttt{deriving Fintype} for \texttt{Src} fails on this toolchain. It is replaced by a hand-written instance with a \texttt{decide} check that the type has 6 elements.
+(2)~T17 uses $N^2$ pair lanes rather than $\binom N2$.
+(3)~T23 adds \lnm{lowrank_proper} (square $L=n$ tables over a field) and its rational instance, which refute the expressiveness-preservation reading of \lnm{lowrank_generalizes}; the extension to the deployed $1024\times704$ integer tables is informal.
+
+(4)~T24 adds \lnm{never_worse_dominated} (two cost functions) and \lnm{hybrid_correct_impl} (Stockfish's evaluation order), so that the assumptions of the specification's single-cost form are explicit.
+(5)~T19 adds \lnm{king_half_onto}, and T20 adds \lnm{canon_mem_orbit} and \lnm{canon_eq_iff}, so that ``192 orbits'' is actually derived rather than just ``192 canonical values''.
+(6)~T21 adds \lnm{acc_equivariant_accV} (with bias) and \lnm{psi_shared_sigC} (the concrete colour flip, all powers $k$).
+(7)~T22 adds \lnm{isotypic_action}, \lnm{isotypic_inj} and \lnm{isotypic_not_surj}.
+
+\paragraph{Reproducing.}
+\begin{verbatim}
+cd lean
+modal run modal_check.py                    # all modules + root, prints RESULT
+modal run modal_check.py --files VNNUE/Basic.lean,VNNUE/Accumulator.lean
+\end{verbatim}
+The image clones Mathlib \texttt{v4.35.0}, installs \texttt{elan}, and fetches the prebuilt cache (\texttt{lake exe cache get}).
+On a machine with roughly 8\,GB of free RAM the development can also be checked locally with \texttt{cd lean \&\& lake exe cache get \&\& lake build}; the Mathlib revision is pinned in \texttt{lakefile.toml} and \texttt{lake-manifest.json}.
+A full run builds the 8 modules in about 20--45\,s each on 8 vCPUs.
+
+%=====================================================================
+\section{Full theorem index}\label{app:index}
+%=====================================================================
+
+All names are in namespace \texttt{VNNUE}.
+``(h)'' marks helper lemmas that support a spec theorem; ``(i)'' marks instantiations at $\Z$ or $\Zm{16}$ (\texttt{ZMod 65536}).
+Statements are abbreviated, and Section~\ref{sec:theorems} gives them in full.
+
+{\small
+\begin{longtable}{@{}p{1.1cm}p{5.3cm}p{8.6cm}@{}}
+\toprule
+ID & Lean name & Statement\\
+\midrule
+\endfirsthead
+\toprule
+ID & Lean name & Statement\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\emph{Basic (sanity lemmas)}}\\
+-- & \lean{ind_apply} & $\one_S(i)=[i\in S]$\\
+-- & \lean{ind_of_mem}, \lean{ind_of_not_mem} & $\one_S(i)=1$ if $i\in S$; $=0$ if $i\notin S$\\
+-- & \lean{ind_isBinary} & $\one_S$ is binary\\
+-- & \lean{delta_apply} & $\delta(S,T)_i=\one_T(i)-\one_S(i)$\\
+-- & \lean{mem_supp} & $i\in\supp\delta\iff\delta_i\ne0$\\
+-- & \lean{foldDeltas_nil}, \lean{foldDeltas_cons} & fold of $[]$ is identity; one fold step\\
+-- & \lean{dec16_intCast_of_inI16} & $\dec(v)=v$ on int16 range\\
+-- & \lean{sat16_of_inI16} & $\satop v=v$ on int16 range\\
+-- & \lean{sat16_eq_clampZ} & $\satop=\clamp(-32768,32767,\cdot)$\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Accumulator}}\\
+T1 & \lean{Phi_add} & $\Phi_W(x+y)=\Phi_Wx+\Phi_Wy$\\
+T1 & \lean{accV_add_delta} & $\accV(x+\delta)=\accV(x)+\Phi_W\delta$\\
+T1 & \lean{Phi_eq_sum_supp} & $\Phi_W\delta=\sum_{i\in\supp\delta}\delta_iW_i$\\
+T2 & \lean{foldDeltas_eq} & $\fold(\accV x,\ell)=\accV(x+\sum\ell)$\\
+T2 & \lean{foldDeltas_perm} & fold is invariant under permutation of $\ell$\\
+T2 (h) & \lean{foldDeltas_append} & fold over $\ell_1\mathbin{+\!\!+}\ell_2$ = fold $\ell_2$ after fold $\ell_1$\\
+T2 (h) & \lean{foldDeltas_group} & a prefix may be replaced by its net delta\\
+T3 & \lean{accS_eq_accV} & $\accS(S)=\accV(\one_S)$\\
+T3 & \lean{accS_any_source} & $\accS(S)=\accS(U)+\sum_{S\setminus U}W-\sum_{U\setminus S}W$\\
+T3 & \lean{colOps_eq} & $|S\symd U|=|S\setminus U|+|U\setminus S|$\\
+T3 (h) & \lean{Phi_delta} & $\Phi_W\delta(U,S)=\sum_{S\setminus U}W-\sum_{U\setminus S}W$\\
+T1 (i) & \lean{accV_add_delta_int}, \lean{accV_add_delta_zmod} & T1(b) at $\Z$, $\Zm{16}$\\
+T2 (i) & \lean{foldDeltas_eq_int}, \lean{foldDeltas_eq_zmod} & T2(a) at $\Z$, $\Zm{16}$\\
+T3 (i) & \lean{accS_any_source_int}, \lean{accS_any_source_zmod} & T3(b) at $\Z$, $\Zm{16}$\\
+T3/T7 (h) & \lean{castLanes_accV_int} & lane-wise cast commutes with $\accV$\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{DeltaMonoid}}\\
+T4 & \lean{delta_telescope} & $\delta(S_0,S_1)+\delta(S_1,S_2)=\delta(S_0,S_2)$\\
+T4 & \lean{ind_add_delta} & $\one_S+\delta(S,T)=\one_T$\\
+T4 & \lean{supp_delta} & $\supp\delta(S,T)=S\symd T$\\
+T5 & \lean{supp_add_subset} & $\supp(\delta+\varepsilon)\subseteq\supp\delta\cup\supp\varepsilon$\\
+T5 & \lean{card_supp_sum_le} & $|\supp\sum\ell|\le\sum|\supp\delta_j|$\\
+T6 & \lean{colOps_triangle} & triangle inequality for $|\cdot\symd\cdot|$\\
+T6 & \lean{colOps_comm} & symmetry\\
+T6 & \lean{colOps_image} & invariance under injective relabelling\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Quantization}}\\
+(h) & \lean{quant_Phi_add}, \lean{quant_foldDeltas_eq}, \lean{quant_accV_add} & local copies of T1/T2 (fold $=a+\Phi_W\sum\ell$)\\
+T9 (h) & \lean{le_Mplus}, \lean{Mminus_le}, \lean{Mplus_nonneg}, \lean{Mminus_nonpos} & $M^-_{g(i)}\le w_i\le M^+_{g(i)}$; signs of $M^\pm$\\
+T7 & \lean{castLanes_accV} & cast to $\Zm{16}$ commutes with accumulation\\
+T7 & \lean{dec16_intCast} & $\dec$ exact on $[-32768,32767]$\\
+T7 & \lean{wrap_exact} & wrapped fold decodes exactly if the final value is in range\\
+T7 & \lean{valMinAbs_window} & $\mathrm{valMinAbs}$ exact on $(-32768,32768]$\\
+T7 & \lean{valMinAbs_neg32768} & $\mathrm{valMinAbs}(-32768)=32768$\\
+T8 & \lean{sat16_not_assoc} & saturating add is not associative\\
+T8 & \lean{sat16_path_dependent} & $2767$ vs $30000$ along two paths\\
+T9 & \lean{slot_certificate} & $\sum_t\mathrm{cap}_tM^-_t\le\sum_Aw\le\sum_t\mathrm{cap}_tM^+_t$\\
+T9 & \lean{card_bound} & $|A|\le K$, $w\le M$ $\Rightarrow$ $\sum_Aw\le KM$\\
+T9 (h) & \lean{abs_sum_le_card_mul} & $|\sum_Aw|\le|A|M$\\
+T9 & \lean{global_bound} & $|b+\sum_Aw|\le|b|+|A|M$\\
+T9 & \lean{P1_numeric}, \lean{P2_numeric} & $32\cdot127=4064<2^{15}$; $32\cdot127^2=516128<2^{31}$\\
+T9 & \lean{P1_bound}, \lean{P2_bound} & $|w|\le127$, $|A|\le32$ $\Rightarrow$ $|\sum|\le4064$, int16; $|w|\le127^2\Rightarrow|\sum|\le516128<2^{31}$\\
+T10 & \lean{pmaddubsw_safe} & $|a_1w_1+a_2w_2|\le32258$\\
+T10 & \lean{pmaddubsw_unsafe_255} & $255\cdot127\cdot2>32767$\\
+T11 & \lean{quant_sum_error} & dequantized error $\le(|A|+1)/(2s)$\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Interaction}}\\
+(h) & \lean{vn_sum_sum_mul}, \lean{vn_sum3} & double/triple sums of separated products factor\\
+T12 (h) & \lean{e2_eq_sum_sum} & $e_2$ as a guarded double sum\\
+T15 (h) & \lean{distinct_ind} & inclusion--exclusion for ``pairwise distinct''\\
+T15 (h) & \lean{three_dvd_cube_sum} & $3\mid(\sum f)^3-\sum f^3$\\
+T12 & \lean{ng2} & $(\sum y)^2-\sum y^2=2e_2(y)$\\
+T12 & \lean{psi_lane} & binary $x$: $p_1^2-p_2=2e_2(x\odot v)$\\
+T12 & \lean{psi_even} & $2\mid p_1^2-p_2$ for all integer $x$\\
+T13 & \lean{psi_heads} & head readout $=2\sum_{i<j}x_ix_jQ^h_{ij}$\\
+T14 & \lean{psum_add} & $p_k(x+\delta)=p_k(x)+p_k(\delta)$\\
+T14 (h) & \lean{psum_single} & $p_k(e_j)=v_j^k$\\
+T14 & \lean{psi_add_feature} & $q(x+e_j)=q(x)+2v_jp_1(x)$\\
+T14 & \lean{psi_remove_feature} & $q(x-e_j)=q(x)-2v_jp_1(x-e_j)$\\
+T15 & \lean{ng3} & $e_3^{\mathrm{ord}}=p_1^3-3p_1p_2+2p_3$\\
+T15 & \lean{ng3_six_dvd} & $6\mid p_1^3-3p_1p_2+2p_3$ (unweighted power sums of $y$)\\
+T15 & \lean{ng3_binary} & binary form of \lean{ng3}\\
+T16 & \lean{mix_range} & $|\sum_t\Lambda_te_t|<2^{31}$ for $r\le32$\\
+T16 & \lean{ng3_range} & degree-3 readout $<2^{31}$ under three bounds\\
+T16 & \lean{e_lane_range} & $|P1^2-P2|<2^{31}$\\
+T17 (h) & \lean{psum_pair}, \lean{lane_pair}, \lean{pair_sum} & pair lanes $e_a+e_b$ reproduce $Q$\\
+T17 & \lean{psi_universal} & every pair table is realized by some PSI head\\
+T18 & \lean{psi_zero_heads} & $\Lambda=0\Rightarrow$ pre-bias head sums $0$\\
+T18 & \lean{fc0_embed} & $B_z=0\Rightarrow$ fc\_0 equals NNUE's\\
+T18 & \lean{affine_second_diff} & affine $f$ has zero mixed second difference\\
+T18 & \lean{psi_not_affine} & PSI lane has mixed second difference $2$\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Symmetry}}\\
+T19 & \lean{klein_squares} & mirH, flipV commuting fixed-point-free involutions\\
+T19 & \lean{king_half} & 32 squares on e--h; mirH maps a--d into e--h\\
+T19 (h) & \lean{mirH_file} & file of $\mathrm{mirH}\,s$ is $7-$file\\
+T19 & \lean{king_half_onto} & mirH maps a--d onto e--h, and e--h into a--d\\
+T20 (h) & \lean{sigH_sigH}, \lean{sigC_sigC}, \lean{sigH_sigC} & $\sigma_h,\sigma_c$ commuting involutions\\
+T20 (h) & \lean{canon_eq}, \lean{fin2_rev_eq_zero}, \lean{normC_sigH}, \lean{normC_sigC}, \lean{normC_fst}, \lean{foldH_sigH} & decomposition $\canon=\mathrm{foldH}\circ\mathrm{normC}$ and its invariances\\
+T20 & \lean{feat_free} & free action on 768 features\\
+T20 & \lean{canon_invariant} & $\canon$ constant on orbits\\
+T20 (h) & \lean{canon_mem}, \lean{canon_fix} & range of $\canon$; fixed points\\
+T20 & \lean{canon_image_card} & $|\canon(\mathfrak A)|=192$\\
+T20 (h) & \lean{inOrb_symm}, \lean{inOrb_trans} & orbit relation symmetric, transitive\\
+T20 & \lean{canon_mem_orbit} & $\canon i$ lies in the orbit of $i$\\
+T20 & \lean{canon_eq_iff} & fibres of $\canon$ = orbits\\
+T21 & \lean{acc_equivariant} & tied weights: lane-permuted accumulator\\
+T21 & \lean{acc_equivariant_accV} & with invariant bias\\
+T21 & \lean{psi_shared} & tied $V$: $p_1,p_2$ shared up to lane permutation\\
+T21 & \lean{psi_shared_sigC} & concrete $\sigma_c$, all powers $k$\\
+T22 & \lean{regular_rep} & doubled table is swap-equivariant\\
+T22 & \lean{isotypic} & $(u{+}v)\pm(u{-}v)=2u,2v$\\
+T22 & \lean{isotypic_action} & $a_+$ invariant, $a_-$ negated under $\sigma$\\
+T22 & \lean{isotypic_inj} & $(u,v)\mapsto(u{+}v,u{-}v)$ injective over $\Z$\\
+T22 & \lean{isotypic_not_surj} & not surjective: $(1,0)$ has no preimage\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Refresh}}\\
+T23 & \lean{king_transition} & low-rank king transition identity\\
+T23 & \lean{king_transition_y_update} & $Vx+V(x'-x)=Vx'$\\
+T23 & \lean{factored_eq_merged} & $(W^0+UV)x=W^0x+U(Vx)$\\
+T23 & \lean{lowrank_generalizes} & trivial full-rank ($r=n$) embedding of any bucket family\\
+T23 & \lean{lowrank_proper} & over a field, $r<n$ cannot represent $\{0,I_n\}$\\
+T23 & \lean{lowrank_proper_rat_2_1} & instance over $\mathbb Q$, $n=2$, $r=1$\\
+T23 (i) & \lean{king_transition_int}, \lean{king_transition_zmod}, \lean{factored_eq_merged_int}, \lean{factored_eq_merged_zmod} & at $\Z$ and $\Zm{16}$\\
+T24 & \lean{inf'_superset} & min over superset $\le$ min over subset\\
+T24 & \lean{never_worse} & $\min_{\mathrm{Src}}\le\min_{\mathrm{SF}}$, costs in $\N\cup\{\top\}$\\
+T24 & \lean{never_worse_general} & same, any linear order\\
+T24 & \lean{never_worse_dominated} & two cost functions with per-source dominance\\
+T24 (h) & \lean{refresh_accS_any_source} & local copy of T3(b)\\
+T24 & \lean{hybrid_correct} & Stockfish hybrid update is exact\\
+T24 & \lean{hybrid_correct_impl} & in Stockfish's evaluation order\\
+T24 (i) & \lean{hybrid_correct_zmod} & at $\Zm{16}$\\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Complexity}}\\
+T25 & \lean{psi_overhead} & $4L(\mathrm{cost}_N+ke)\le(4L+e)\mathrm{cost}_N$\\
+T25 & \lean{psi_overhead_ratio} & $ke/\mathrm{cost}_N\le e/(4L)$\\
+T25 & \lean{psi_overhead_instance} & $e=192$, $L=1024$: $\le4.7\%$\\
+T25 & \lean{psi_overhead_instance_exact} & $4096(\mathrm{cost}_N+192k)\le4288\,\mathrm{cost}_N$\\
+T25 (h) & \lean{inf'_superset_cx} & local copy of T24(a)\\
+T25 & \lean{king_event_total} & $C_1\subseteq C_2$, $C_1\neq\emptyset$: $\min_{C_2}+ke\le\min_{C_1}+ke$\\
+A1 & \lean{ski_upper} & $B\cdot\mathrm{alg}\le(2B-1)\min(n,B)$\\
+A1 & \lean{ski_lower} & every threshold rule has ratio $\ge2-1/B$\\
+A2 (h) & \lean{sum_map_traffic_cx} & $\sum_j(k_jc+2a)=c\sum k+2at$\\
+A2 & \lean{fused_traffic} & fused traffic $\le$ sequential traffic\\
+A2 & \lean{fused_one_pass} & one pass suffices\\
+\end{longtable}
+}
+
+%=====================================================================
+\section{Reproducibility of the experiments}\label{app:repro}
+%=====================================================================
+
+All scripts are in the directory \path{experiments/} of \url{https://github.com/HelloTest006/vnnue}.
+The derived datasets (\path{experiments/data/*.npz}) are included, so every script except \texttt{gen\_data.py} runs without the raw PGN file.
+Results are in \path{experiments/results/*.json} and figures in \path{experiments/figures/}.
+\texttt{RESULTS.md} is generated by \texttt{make\_report.py} from the JSON files.
+Every number in Section~\ref{sec:experiments} is copied from it.
+Seeds are fixed in every script.
+The approximate run times on the 4-core laptop were:
+\begin{verbatim}
+cd experiments
+python gen_data.py        # ~8 min; needs data/lichess/
+                          #   lichess_db_standard_rated_2013-01.pgn.zst
+                          #   (17.8 MB, database.lichess.org)
+python e1_exactness.py    # ~35 min  -> results/e1_exactness.json
+python e2_e4_opcounts.py  # ~53 min  -> results/e2_e4_opcounts.json
+python e2_threat.py       # ~1 min   -> results/e2_threat_proxy.json
+python e3_cache_reset.py  # ~11 min  -> results/e3_cache_reset.json
+python train.py           # ~60 min  -> results/e5_e8_training.json
+python bench.py           # ~3 min   -> results/bench.json
+python make_report.py     # tables, figures, RESULTS.md
+\end{verbatim}
+\texttt{common.py} holds the feature model (simplified K32H3, absolute features, move deltas), and \texttt{sim.py} the accumulator and policy simulator.
+
+\paragraph{Paper build.}
+This paper is compiled remotely by \texttt{paper/modal\_tex.py}, a Modal app (\texttt{vnnue-latex}) running \texttt{latexmk -pdf} with BibTeX on Debian with TeX Live.

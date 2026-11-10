@@ -1,0 +1,43 @@
+{
+ "caveat": "Python/numpy/torch wall clock; dispatch overhead dominates; weak proxy for SIMD C++. Single thread, median of 5 repetitions.",
+ "L": 1024,
+ "table_MB": 138.412032,
+ "unbatched": {
+  "nnue_quiet_move_both_persp_4cols": {
+   "ns_per_call": 9571.52
+  },
+  "psi_quiet_move_P1_P2": {
+   "ns_per_call": 5359.875
+  },
+  "refresh_32cols_one_persp": {
+   "ns_per_call": 49841.06
+  },
+  "woodbury_rK16_plus_2cols_one_persp": {
+   "ns_per_call": 39959.785
+  },
+  "psi_readout_one_persp_m16": {
+   "ns_per_call": 27139.69
+  }
+ },
+ "batched": {
+  "nnue_quiet_4cols": {
+   "ns_per_event": 7578.399658203125,
+   "column_bytes_per_event": 8192,
+   "effective_GBps": 1.080967007477983
+  },
+  "psi_quiet_P1_P2": {
+   "ns_per_event": 503.502197265625,
+   "column_bytes_per_event": 384,
+   "effective_GBps": 0.7626580421801396
+  },
+  "refresh_32cols": {
+   "ns_per_event": 46933.072916666664,
+   "column_bytes_per_event": 65536,
+   "effective_GBps": 1.3963713843405114
+  }
+ },
+ "ratios": {
+  "unbatched_psi_over_nnue_quiet": 0.5599815912206212,
+  "batched_psi_over_nnue_quiet": 0.06643911907187643
+ }
+}

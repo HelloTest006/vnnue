@@ -1,0 +1,169 @@
+{
+ "games": 600,
+ "positions": 37301,
+ "per_move_type": {
+  "capture": {
+   "count": 8249,
+   "threat_proxy_changes_abs": {
+    "n": 8249,
+    "mean": 8.593768941689902,
+    "p50": 8.0,
+    "p95": 15.0,
+    "max": 22.0
+   },
+   "psq_cols_SF": {
+    "n": 8249,
+    "mean": 7.645169111407443,
+    "p50": 6.0,
+    "p95": 26.0,
+    "max": 50.0
+   },
+   "psi_over_psq_col_bytes": 0.03678793704907635,
+   "psi_over_psq_plus_threat_bytes": 0.01389648010494097
+  },
+  "capture_promotion": {
+   "count": 7,
+   "threat_proxy_changes_abs": {
+    "n": 7,
+    "mean": 6.571428571428571,
+    "p50": 7.0,
+    "p95": 10.7,
+    "max": 11.0
+   },
+   "psq_cols_SF": {
+    "n": 7,
+    "mean": 19.0,
+    "p50": 21.0,
+    "p95": 34.89999999999999,
+    "max": 37.0
+   },
+   "psi_over_psq_col_bytes": 0.014802631578947368,
+   "psi_over_psq_plus_threat_bytes": 0.009510869565217392
+  },
+  "castling": {
+   "count": 859,
+   "threat_proxy_changes_abs": {
+    "n": 859,
+    "mean": 13.454016298020955,
+    "p50": 14.0,
+    "p95": 16.0,
+    "max": 18.0
+   },
+   "psq_cols_SF": {
+    "n": 859,
+    "mean": 32.79743888242142,
+    "p50": 33.0,
+    "p95": 44.0,
+    "max": 55.0
+   },
+   "psi_over_psq_col_bytes": 0.011433819614524545,
+   "psi_over_psq_plus_threat_bytes": 0.007462470462864292
+  },
+  "en_passant": {
+   "count": 12,
+   "threat_proxy_changes_abs": {
+    "n": 12,
+    "mean": 9.75,
+    "p50": 10.0,
+    "p95": 13.0,
+    "max": 13.0
+   },
+   "psq_cols_SF": {
+    "n": 12,
+    "mean": 6.0,
+    "p50": 6.0,
+    "p95": 6.0,
+    "max": 6.0
+   },
+   "psi_over_psq_col_bytes": 0.046875,
+   "psi_over_psq_plus_threat_bytes": 0.014240506329113924
+  },
+  "king_capture": {
+   "count": 412,
+   "threat_proxy_changes_abs": {
+    "n": 412,
+    "mean": 5.361650485436893,
+    "p50": 5.0,
+    "p95": 10.449999999999989,
+    "max": 14.0
+   },
+   "psq_cols_SF": {
+    "n": 412,
+    "mean": 27.682038834951456,
+    "p50": 26.0,
+    "p95": 52.0,
+    "max": 71.0
+   },
+   "psi_over_psq_col_bytes": 0.010160017536168348,
+   "psi_over_psq_plus_threat_bytes": 0.007325515235807308
+  },
+  "king_quiet": {
+   "count": 3227,
+   "threat_proxy_changes_abs": {
+    "n": 3227,
+    "mean": 4.4744344592500775,
+    "p50": 4.0,
+    "p95": 10.0,
+    "max": 18.0
+   },
+   "psq_cols_SF": {
+    "n": 3227,
+    "mean": 26.15587232723892,
+    "p50": 23.0,
+    "p95": 58.0,
+    "max": 86.0
+   },
+   "psi_over_psq_col_bytes": 0.007168562288963924,
+   "psi_over_psq_plus_threat_bytes": 0.005163883009592736
+  },
+  "promotion": {
+   "count": 110,
+   "threat_proxy_changes_abs": {
+    "n": 110,
+    "mean": 2.6636363636363636,
+    "p50": 2.0,
+    "p95": 6.0,
+    "max": 11.0
+   },
+   "psq_cols_SF": {
+    "n": 110,
+    "mean": 18.854545454545455,
+    "p50": 18.5,
+    "p95": 40.55,
+    "max": 56.0
+   },
+   "psi_over_psq_col_bytes": 0.009944551591128255,
+   "psi_over_psq_plus_threat_bytes": 0.007347702173138582
+  },
+  "quiet": {
+   "count": 23825,
+   "threat_proxy_changes_abs": {
+    "n": 23825,
+    "mean": 6.294186778593914,
+    "p50": 6.0,
+    "p95": 11.0,
+    "max": 18.0
+   },
+   "psq_cols_SF": {
+    "n": 23825,
+    "mean": 4.0,
+    "p50": 4.0,
+    "p95": 4.0,
+    "max": 4.0
+   },
+   "psi_over_psq_col_bytes": 0.046875,
+   "psi_over_psq_plus_threat_bytes": 0.013117220510983412
+  }
+ },
+ "overall": {
+  "threat_proxy_changes_abs": {
+   "n": 36701,
+   "mean": 6.79845235824637,
+   "p50": 6.0,
+   "p95": 13.0,
+   "max": 22.0
+  },
+  "threat_over_psi_feature_changes": 2.9774463007159904,
+  "psi_over_psq_plus_threat_bytes": 0.01143697127891725
+ }
+}

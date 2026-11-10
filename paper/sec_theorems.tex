@@ -1,0 +1,307 @@
+%=====================================================================
+\section{The update calculus: theorems}\label{sec:theorems}
+%=====================================================================
+
+All statements below are proved in Lean~4 (v4.35.0) against Mathlib (v4.35.0) in namespace \texttt{VNNUE}.
+For each one we give the Lean name(s), the statement as the Lean code states it (transcribed into conventional notation), and a short proof idea.
+Where the Lean statement is narrower or differs from the design specification, we say so.
+Throughout, $R$ is an arbitrary additive commutative group (\texttt{AddCommGroup R}), $W:[N]\to[L]\to R$, $b:[L]\to R$, and $x,\delta\in\Z^N$ act on $R$ by $\Z$-scalar multiplication.
+The definitions are those of \texttt{VNNUE/Basic.lean} (Section~\ref{sec:arch}).
+Theorem numbers T1--T25 and A1--A2 follow the specification; Appendix~\ref{app:index} gives the complete index.
+
+\subsection{Accumulator algebra (module \texttt{Accumulator})}
+
+\begin{theorem}[T1: homomorphism and delta rule]\label{thm:t1}
+For all $W,b,x,y,\delta$:
+(a)~$\Phi_W(x+y)=\Phi_W(x)+\Phi_W(y)$;
+(b)~$\accV(b,W,x+\delta)=\accV(b,W,x)+\Phi_W(\delta)$;
+(c)~$\Phi_W(\delta)=\sum_{i\in\supp\delta}\delta_i\,W_i$.
+\leanref{\lnm{Phi_add}, \lnm{accV_add_delta}, \lnm{Phi_eq_sum_supp}; instances \lnm{accV_add_delta_int}, \lnm{accV_add_delta_zmod} at $R=\Z$ and $R=\texttt{ZMod 65536}$}
+\end{theorem}
+\noindent\emph{Proof idea.} Distribute $\Z$-scalar multiplication over the finite sum; in (c), terms off the support vanish (\texttt{Finset.sum\_filter}).
+
+\begin{theorem}[T2: path independence]\label{thm:t2}
+For every list $\ell$ of deltas,
+(a)~$\fold_W(\accV(b,W,x),\ell)=\accV(b,W,x+\textstyle\sum\ell)$;
+(b)~if $\ell$ is a permutation of $\ell'$, the two folds from $\accV(b,W,x)$ agree;
+(c)~for any start $a$ and, for the second identity, $a=\accV(b,W,x)$,
+\[\fold_W(a,\ell_1\mathbin{+\!\!+}\ell_2)=\fold_W(\fold_W(a,\ell_1),\ell_2),\qquad \fold_W(a,\ell_1\mathbin{+\!\!+}\ell_2)=\fold_W\big(a,(\textstyle\sum\ell_1)::\ell_2\big),\]
+i.e.\ any prefix may be replaced by its net delta.
+\leanref{\lnm{foldDeltas_eq}, \lnm{foldDeltas_perm}, \lnm{foldDeltas_append}, \lnm{foldDeltas_group}; instances \lnm{foldDeltas_eq_int}, \lnm{foldDeltas_eq_zmod}}
+\end{theorem}
+\noindent\emph{Proof idea.} Induction on $\ell$ generalizing $x$, using T1(b); (b) and (c) follow from (a) and \lean{List.Perm.sum_eq} and \lean{List.sum_append}.
+
+\begin{theorem}[T3: set form; any-source correctness]\label{thm:t3}
+For finite sets $S,U\subseteq[N]$:
+(a)~$\accS(b,W,S)=\accV(b,W,\one_S)$;
+(b)~for every $U$,
+\[\accS(b,W,S)=\accS(b,W,U)+\sum_{i\in S\setminus U}W_i-\sum_{i\in U\setminus S}W_i;\]
+(c)~$\colops(S,U)=|S\setminus U|+|U\setminus S|$;
+(d)~$\Phi_W(\delta(U,S))=\sum_{i\in S\setminus U}W_i-\sum_{i\in U\setminus S}W_i$.
+Moreover, casting an integer accumulator lane-wise into $\Zm{16}$ equals the accumulator built from the cast bias and cast weights.
+\leanref{\lnm{accS_eq_accV}, \lnm{accS_any_source}, \lnm{colOps_eq}, \lnm{Phi_delta}, \lnm{castLanes_accV_int}; instances \lnm{accS_any_source_int}, \lnm{accS_any_source_zmod}}
+\end{theorem}
+\noindent\emph{Proof idea.} Split each sum over $S$ (resp.\ $U$) into $S\cap U$ and $S\setminus U$ and cancel with \texttt{abel}; (c) is the disjoint union $S\symd U=(S\setminus U)\cup(U\setminus S)$.
+Statement (b) is the correctness of every cache-based source: a Finny entry, a stack ancestor, or the empty set (refresh).
+
+\subsection{Delta monoid and cost metric (module \texttt{DeltaMonoid})}
+
+\begin{theorem}[T4: telescoping]\label{thm:t4}
+$\delta(S_0,S_1)+\delta(S_1,S_2)=\delta(S_0,S_2)$, $\one_S+\delta(S,T)=\one_T$, and $\supp\delta(S,T)=S\symd T$.
+\leanref{\lnm{delta_telescope}, \lnm{ind_add_delta}, \lnm{supp_delta}}
+\end{theorem}
+
+\begin{theorem}[T5: net-delta support bound]\label{thm:t5}
+$\supp(\delta+\varepsilon)\subseteq\supp\delta\cup\supp\varepsilon$, and for every list $\ell$ of deltas, $|\supp\textstyle\sum\ell|\le\sum_{\delta\in\ell}|\supp\delta|$.
+\leanref{\lnm{supp_add_subset}, \lnm{card_supp_sum_le}}
+\end{theorem}
+\noindent\emph{Proof idea.} Pointwise contrapositive, then induction with \texttt{Finset.card\_union\_le}.
+Cancellation can only reduce the number of columns a catch-up touches. It does not follow that greedy catch-up reduces whole-trace cost (Section~\ref{sec:e3}).
+
+\begin{theorem}[T6: $\colops$ is a relabelling-invariant metric]\label{thm:t6}
+For finite sets over any type with decidable equality,
+$\colops(A,C)\le\colops(A,B)+\colops(B,C)$, $\colops(A,B)=\colops(B,A)$, and for injective $f$, $\colops(f(S),f(C))=\colops(S,C)$.
+\leanref{\lnm{colOps_triangle}, \lnm{colOps_comm}, \lnm{colOps_image}}
+\end{theorem}
+\noindent So routing through an intermediate source never beats the direct diff, and a mirrored cache entry, valid by T21, costs the same (T6).
+
+\subsection{Integer semantics and certificates (module \texttt{Quantization})}
+
+Here $\dec(y)=y.\mathrm{val}$ if $y.\mathrm{val}<32768$ and $y.\mathrm{val}-65536$ otherwise, $\mathrm{InI16}(v)\iff-32768\le v\le32767$, and $\satop(v)=\max(-32768,\min(32767,v))$.
+
+\begin{theorem}[T7: wrap-around exactness]\label{thm:t7}
+For integer $b,W,x$ and every list $\ell$ of deltas and lane $j$:
+(a)~$\mathrm{cast}(\accV(b,W,x))=\accV(\mathrm{cast}\,b,\mathrm{cast}\,W,x)$ in $(\Zm{16})^L$;
+(b)~if $\mathrm{InI16}(v)$ then $\dec((v:\Zm{16}))=v$;
+(c)~if $\mathrm{InI16}(\accV(b,W,x+\sum\ell)_j)$ then
+\[\dec\big(\fold_{\mathrm{cast}W}(\accV(\mathrm{cast}\,b,\mathrm{cast}\,W,x),\ell)_j\big)=\accV(b,W,x+\textstyle\sum\ell)_j;\]
+(d)~Mathlib's $\mathrm{valMinAbs}((v:\Zm{16}))=v$ for $-32768<v\le32768$, and $\mathrm{valMinAbs}((-32768:\Zm{16}))=32768$.
+\leanref{\lnm{castLanes_accV}, \lnm{dec16_intCast}, \lnm{wrap_exact}, \lnm{valMinAbs_window}, \lnm{valMinAbs_neg32768}}
+\end{theorem}
+\noindent\emph{Proof idea.} $\Z\to\Zm{16}$ is a ring homomorphism; (c) is T2 in $\Zm{16}$, then (a), then (b) (by \texttt{ZMod.val\_intCast} and \texttt{omega}).
+Only the \emph{final} value needs to be in range; intermediate overflow is irrelevant.
+Part (d) records a correction: an earlier draft claimed \texttt{valMinAbs} is exact on $[-2^{15},2^{15})$, which is false at $-2^{15}$.
+
+\begin{theorem}[T8: saturation is path-dependent]\label{thm:t8}
+$\satop(\satop(32767+1)+(-1))\neq\satop(32767+\satop(1+(-1)))$, and
+$\satop(\satop(30000+30000)+(-30000))=2767$ while $\satop(30000+\satop(30000+(-30000)))=30000$.
+\leanref{\lnm{sat16_not_assoc}, \lnm{sat16_path_dependent}}
+\end{theorem}
+\noindent Saturating adds (\texttt{paddsw}) therefore cannot replace wrapping adds (\texttt{paddw}) in incremental updates. Correctness requires wrapping arithmetic together with a range certificate.
+
+\begin{theorem}[T9: slot certificate and bounds]\label{thm:t9}
+Let $g:[N]\to[m]$ be a group map, $w\in\Z^N$ a lane of weights, $M^+_t=\max(0,\max_{g(i)=t}w_i)$ and $M^-_t=\min(0,\min_{g(i)=t}w_i)$ (Lean \texttt{Mplus}, \texttt{Mminus}).
+(a)~If $|\{i\in A:g(i)=t\}|\le\mathrm{cap}_t$ for all $t$, then $\sum_t\mathrm{cap}_tM^-_t\le\sum_{i\in A}w_i\le\sum_t\mathrm{cap}_tM^+_t$.
+(b)~If $|A|\le K$, $0\le M$ and $w_i\le M$ for all $i$, then $\sum_{i\in A}w_i\le KM$.
+(c)~If $|w_i|\le M$ for all $i$, then $|b+\sum_{i\in A}w_i|\le|b|+|A|M$.
+(d)~Instances: if $|w_i|\le127$ and $|A|\le32$ then $|\sum_Aw_i|\le4064$ and the sum is in int16 range; if $|w_i|\le127^2$ and $|A|\le32$ then $|\sum_Aw_i|\le516{,}128<2^{31}$.
+\leanref{\lnm{slot_certificate}, \lnm{card_bound}, \lnm{global_bound}, \lnm{abs_sum_le_card_mul}, \lnm{P1_bound}, \lnm{P2_bound}, \lnm{P1_numeric}, \lnm{P2_numeric}}
+\end{theorem}
+\noindent\emph{Proof idea.} Split $A$ into fibres of $g$ (\texttt{Finset.sum\_fiberwise}), bound each fibre by its cardinality times $M^\pm_t$, then by $\mathrm{cap}_t$.
+The Lean statement bounds the lane sum without bias. The certified accumulator range adds $b_\ell$.
+An earlier ``$\le32$ slots, one active each'' formulation was ill-defined (pieces are unlabelled) and was replaced by this group-map form.
+
+\begin{theorem}[T10: \texttt{pmaddubsw} pair safety]\label{thm:t10}
+If $0\le a_1,a_2\le127$ and $|w_1|,|w_2|\le127$, then $|a_1w_1+a_2w_2|\le32258$.
+In contrast, $255\cdot127+255\cdot127>32767$.
+\leanref{\lnm{pmaddubsw_safe}, \lnm{pmaddubsw_unsafe_255}}
+\end{theorem}
+
+\begin{theorem}[T11: quantized-sum rounding error]\label{thm:t11}
+Let $s>0$. If $|q_i-sw_i|\le\frac12$ for $i\in A$ and $|q_b-sb|\le\frac12$ (all real), then
+$\big|(q_b+\sum_Aq_i)/s-(b+\sum_Aw_i)\big|\le(|A|+1)/(2s)$.
+\leanref{\lnm{quant_sum_error}}
+\end{theorem}
+\noindent Raising the FT scale $s$ shrinks this bound, but it also moves the $0..255$ clamp and the $/512$ product normalization, so it is not a free precision gain.
+
+\subsection{Power-sum interactions (module \texttt{Interaction})}
+
+Write $p_k(v,x)=\sum_ix_iv_i^k$ (Lean \texttt{psum k v x}) and $e_2(y)=\sum_{i<j}y_iy_j$.
+Let $e_3^{\mathrm{ord}}(y)$ be the sum of $y_iy_jy_k$ over ordered triples of pairwise distinct indices (so $e_3^{\mathrm{ord}}=6e_3$).
+A vector $x$ is binary if every $x_i\in\{0,1\}$.
+
+\begin{theorem}[T12: Newton--Girard order 2 and exact halving]\label{thm:t12}
+For every $y\in\Z^N$, $(\sum_iy_i)^2-\sum_iy_i^2=2e_2(y)$.
+For binary $x$ and any lane $v$, $p_1(v,x)^2-p_2(v,x)=2e_2(x\odot v)$.
+For \emph{every} integer $x$ (binary or not), $2\mid p_1(v,x)^2-p_2(v,x)$.
+\leanref{\lnm{ng2}, \lnm{psi_lane}, \lnm{psi_even}}
+\end{theorem}
+\noindent\emph{Proof idea.} Expand the square as a double sum and split it into $i<j$, $i>j$ and $i=j$. For evenness, write the difference as $2e_2(x\odot v)+\sum_ix_i(x_i-1)v_i^2$, and note that $x(x-1)$ is even.
+
+\begin{theorem}[T13: PSI heads are an all-pairs factorization machine]\label{thm:t13}
+For $V\in\Z^{r\times N}$, $\Lambda\in\Z^{m\times r}$, binary $x$ and every head $h$,
+\[
+\sum_t\Lambda_{h,t}\big(p_1(V_t,x)^2-p_2(V_t,x)\big)=2\sum_{i<j}x_ix_j\sum_t\Lambda_{h,t}V_{t,i}V_{t,j}.
+\]
+\leanref{\lnm{psi_heads}}
+\end{theorem}
+
+\begin{theorem}[T14: incremental rules]\label{thm:t14}
+For all integer $x,\delta$ and every feature $j$ (with $e_j$ the unit vector):
+$p_k(v,x+\delta)=p_k(v,x)+p_k(v,\delta)$;
+\[
+q(x+e_j)=q(x)+2v_j\,p_1(v,x),\qquad q(x-e_j)=q(x)-2v_j\,p_1(v,x-e_j),
+\]
+where $q(x)=p_1(v,x)^2-p_2(v,x)$.
+\leanref{\lnm{psum_add}, \lnm{psi_add_feature}, \lnm{psi_remove_feature} (helper \lnm{psum_single})}
+\end{theorem}
+\noindent This is the DBSP-style product rule~\cite{budiu2023}: $\Delta E=v_jP1(\text{before})$ on add and $-v_jP1(\text{after})$ on remove. No binarity hypothesis is needed.
+
+\begin{theorem}[T15: Newton--Girard order 3 and divisibility by 6]\label{thm:t15}
+For every $y\in\Z^N$, $e_3^{\mathrm{ord}}(y)=p_1^3-3p_1p_2+2p_3$ with $p_k=\sum_iy_i^k$, and $6\mid p_1^3-3p_1p_2+2p_3$.
+For binary $x$, $e_3^{\mathrm{ord}}(x\odot v)=p_1(v,x)^3-3p_1(v,x)p_2(v,x)+2p_3(v,x)$.
+\leanref{\lnm{ng3}, \lnm{ng3_six_dvd}, \lnm{ng3_binary}}
+\end{theorem}
+\noindent\emph{Proof idea.} Inclusion--exclusion over the diagonals $\{i=j\},\{j=k\},\{i=k\}$ of the triple sum. Divisibility by 2 follows from T12, and divisibility by 3 from $(\sum y)^3\equiv\sum y^3\pmod 3$ (proved by induction on the index set); then use $\gcd(2,3)=1$.
+
+\begin{theorem}[T16: int32 range certificates]\label{thm:t16}
+(a)~If $r\le32$, $|\Lambda_t|\le127$ and $|e_t|\le32768$, then $|\sum_t\Lambda_te_t|<2^{31}$ (the proof goes through the bound $32\cdot127\cdot32768=133{,}169{,}152$).
+(b)~If $|p_1|\le480$, $|p_2|\le7200$, $|p_3|\le108{,}000$, then $|p_1^3-3p_1p_2+2p_3|<2^{31}$.
+(c)~If $|P1|\le4064$ and $0\le P2\le516{,}128$, then $|P1^2-P2|<2^{31}$.
+\leanref{\lnm{mix_range}, \lnm{ng3_range}, \lnm{e_lane_range}}
+\end{theorem}
+\noindent An earlier version of (b) assumed only a bound on $p_1$ and was false (take $p_1=0$, $p_3=2^{31}$). The Lean statement carries all three hypotheses.
+
+\begin{theorem}[T17: universality given $N^2$ lanes]\label{thm:t17}
+For every integer pair table $Q\in\Z^{N\times N}$ there exist $r$, $V\in\Z^{r\times N}$ and $\lambda\in\Z^r$ such that for every binary $x$,
+$\sum_t\lambda_t(p_1(V_t,x)^2-p_2(V_t,x))=2\sum_{i<j}Q_{ij}x_ix_j$.
+\leanref{\lnm{psi_universal} (helpers \lnm{psum_pair}, \lnm{lane_pair}, \lnm{pair_sum})}
+\end{theorem}
+\noindent The construction uses $r=N^2$ lanes indexed by ordered pairs $(a,b)$, pair lanes $V=e_a+e_b$, and $\lambda=Q_{ab}$ if $a<b$, else $0$. The specification proposed $r=\binom N2$; the Lean witness is wasteful but simpler. An earlier claim that ``$V=I$ gives every diagonal-core table'' is false ($V=I$ gives $z\equiv0$).
+T17 is an existence statement at $r=N^2$ and says nothing about the deployed $r=32$.
+
+\begin{theorem}[T18: strict generalization and non-affinity]\label{thm:t18}
+(a)~With $\Lambda=0$, the head sum $\sum_t\Lambda_{h,t}(p_1(V_t,x)^2-p_2(V_t,x))$ is $0$ for every $V,x$ (before bias, shift and clamp).
+(b)~If the extra fc\_0 block $B_z=0$, then $A\,a+B_z z=A\,a$.
+(c)~For every $f(x)=c+w_0x_0+w_1x_1$ on two indicators, $f(1,1)-f(1,0)-f(0,1)+f(0,0)=0$.
+(d)~For the lane $v=(1,1)$ and $q(x)=p_1(v,x)^2-p_2(v,x)$, $q(1,1)-q(1,0)-q(0,1)+q(0,0)=2$.
+\leanref{\lnm{psi_zero_heads}, \lnm{fc0_embed}, \lnm{affine_second_diff}, \lnm{psi_not_affine}}
+\end{theorem}
+\noindent Part (b) shows that with the extra fc\_0 columns $B_z=0$, fc\_0 computes exactly NNUE's $A\,a$, whatever the PSI outputs are. Part (a) shows that at $\Lambda=0$ the PSI input is a constant ($b^z$ after shift and clamp). Composing these into whole-network equality (layer stacks, clipping) is immediate but not itself formalized.
+Parts (c)--(d) support the claim that PSI lanes are not affine in piece indicators.
+The application to K32H3 (``at fixed king squares and block, a PSQ lane is affine in the non-king piece indicators'') is an informal coordinate-wise use of (c) and is not itself a Lean statement.
+
+\subsection{Symmetry (module \texttt{Symmetry})}
+
+Squares are $[64]$; $\mathrm{mirH}(s)$ maps file $f\mapsto7-f$ ($s\oplus7$) and $\mathrm{flipV}(s)$ maps rank $\rho\mapsto7-\rho$ ($s\oplus56$).
+Features are $\mathfrak A=[2]\times[6]\times[64]$, with $\sigma_h(c,p,s)=(c,p,\mathrm{mirH}\,s)$, $\sigma_c(c,p,s)=(1-c,p,\mathrm{flipV}\,s)$, and $\canon(i)$ which first normalizes the colour to $0$ (applying $\sigma_c$ if needed) and then the file to e--h (applying $\sigma_h$ if needed).
+
+\begin{theorem}[T19: Klein four-group on squares]\label{thm:t19}
+$\mathrm{mirH}$ and $\mathrm{flipV}$ are commuting involutions, and $\mathrm{mirH}$, $\mathrm{flipV}$ and $\mathrm{mirH}\circ\mathrm{flipV}$ have no fixed squares.
+Exactly 32 squares lie on files e--h, and $\mathrm{mirH}$ maps the a--d squares onto the e--h squares (and e--h into a--d).
+\leanref{\lnm{klein_squares}, \lnm{king_half}, \lnm{king_half_onto}}
+\end{theorem}
+
+\begin{theorem}[T20: free action and 192 orbits]\label{thm:t20}
+For every $i\in\mathfrak A$: $\sigma_hi\neq i$, $\sigma_ci\neq i$, $\sigma_h\sigma_ci\neq i$.
+$\canon$ is invariant under $\sigma_h$ and $\sigma_c$, lands in colour 0 and files e--h, fixes such features, and $\canon(i)\in\{i,\sigma_hi,\sigma_ci,\sigma_h\sigma_ci\}$.
+Furthermore $\canon i=\canon k\iff k\in\{i,\sigma_hi,\sigma_ci,\sigma_h\sigma_ci\}$, and $|\canon(\mathfrak A)|=192$.
+\leanref{\lnm{feat_free}, \lnm{canon_invariant}, \lnm{canon_mem}, \lnm{canon_fix}, \lnm{canon_mem_orbit}, \lnm{canon_eq_iff}, \lnm{canon_image_card}}
+\end{theorem}
+\noindent Hence the free Klein-group action has exactly $768/4=192$ orbits, and full tying leaves 192 free columns. The proofs avoid \texttt{native\_decide}, so the trusted base is not enlarged.
+
+\begin{theorem}[T21: equivariance and PSI perspective sharing]\label{thm:t21}
+Let $\sigma\in\mathrm{Perm}([n])$ and $\pi\in\mathrm{Perm}([L])$, with integer $W$ tied by $W_{\sigma i}(\pi j)=W_i(j)$.
+Then $\sum_ix_{\sigma^{-1}i}W_i(\pi j)=\sum_ix_iW_i(j)$. If moreover $b(\pi j)=b(j)$, then $\accV(b,W,x\circ\sigma^{-1})(\pi j)=\accV(b,W,x)(j)$.
+For PSI, if $V_{P t}(\sigma i)=V_t(i)$, then $p_k(V_{Pt},x\circ\sigma^{-1})=p_k(V_t,x)$ for $k=1,2$.
+For the concrete colour flip $\sigma_c$ on $\mathfrak A$ and every $k$: if $V_{Pt}(\sigma_ci)=V_t(i)$ then $\sum_ix_{\sigma_ci}V_{Pt}(i)^k=\sum_ix_iV_t(i)^k$.
+\leanref{\lnm{acc_equivariant}, \lnm{acc_equivariant_accV}, \lnm{psi_shared}, \lnm{psi_shared_sigC}}
+\end{theorem}
+\noindent\emph{Proof idea.} Reindex the sum by $\sigma$ (\texttt{Equiv.sum\_comp}) and rewrite with the tying hypothesis.
+
+\begin{theorem}[T22: regular representation and isotypic split]\label{thm:t22}
+Let $\sigma$ be an involution on $[n]$ and $W'_i=(W_i,W_{\sigma i})$ on lanes $[L]\sqcup[L]$.
+Then $W'_{\sigma i}(k)=W'_i(\mathrm{swap}\,k)$, and $\sum_ix_iW'_i(\mathrm{inr}\,j)=\sum_ix_{\sigma i}W_i(j)$.
+For $u,v\in\Z^L$: $(u+v)+(u-v)=2u$ and $(u+v)-(u-v)=2v$.
+With $a_\pm(x)_j=\sum_ix_i(W_i(j)\pm W_{\sigma i}(j))$ we have $a_+(x\circ\sigma)=a_+(x)$ and $a_-(x\circ\sigma)=-a_-(x)$.
+The map $(u,v)\mapsto(u+v,u-v)$ is injective on $\Z^L\times\Z^L$, but there are no integers with $u+v=1$, $u-v=0$.
+\leanref{\lnm{regular_rep}, \lnm{isotypic}, \lnm{isotypic_action}, \lnm{isotypic_inj}, \lnm{isotypic_not_surj}}
+\end{theorem}
+\noindent Stockfish's horizontal-mirror canonicalization is the regular-representation case. The isotypic split makes a mirror crossing cost \emph{one negation pass} over $a_-$ (not ``no arithmetic'', as an earlier draft said), at the price of factor-2 scales because the change of basis is not unimodular.
+
+\subsection{Refresh and source selection (module \texttt{Refresh})}
+
+\begin{theorem}[T23: low-rank king transition]\label{thm:t23}
+Over any commutative ring $S$, for $W^0\in S^{L\times n}$, $U,U'\in S^{L\times r}$, $V\in S^{r\times n}$ and $x,x'\in S^n$:
+\begin{align*}
+(W^0+U'V)x'&=(W^0+UV)x+(W^0+U'V)(x'-x)+(U'-U)(Vx),\\
+Vx+V(x'-x)&=Vx',\qquad (W^0+UV)x=W^0x+U(Vx).
+\end{align*}
+(Every family $W_k$ equals $0+W_k\cdot I$, i.e.\ the factorization at inner dimension $r=n$ is trivially general.)
+\emph{However}, over any field $F$, if $r<n$ there is no $W^0$, $V\in F^{r\times n}$, $U_0,U_1$ with $W^0+U_0V=0$ and $W^0+U_1V=I_n$. Concretely, this fails over $\mathbb Q$ with $n=2$, $r=1$.
+\leanref{\lnm{king_transition}, \lnm{king_transition_y_update}, \lnm{factored_eq_merged}, \lnm{lowrank_generalizes}, \lnm{lowrank_proper}, \lnm{lowrank_proper_rat_2_1}; instances \lnm{king_transition_int}, \lnm{king_transition_zmod}, \lnm{factored_eq_merged_int}, \lnm{factored_eq_merged_zmod}}
+\end{theorem}
+\noindent\emph{Proof idea.} Matrix--vector distributivity and \texttt{abel}. For \texttt{lowrank\_proper}, $(U_1-U_0)V=I_n$ would have rank $\le r<n$.
+\begin{remark}[Correction]
+The design specification presented \texttt{lowrank\_generalizes} as showing that low-rank king conditioning ``generalizes'' independent buckets.
+That is true only at full inner dimension $r=n$.
+\texttt{lowrank\_proper} (stated for square $L=n$ tables over any field) shows that for $r<n$ the factored family cannot represent even $\{0,I_n\}$.
+The same obstruction applies to the deployed $1024\times704$ tables at $r_K=16$ by zero-padding and viewing integer weights over $\mathbb Q$; that extension is an informal corollary, not a separate Lean theorem.
+So the expressiveness-preservation reading of \texttt{lowrank\_generalizes} is wrong.
+The cost of the restriction is an empirical question (Section~\ref{sec:e5}).
+The identity also covers only transitions with a shared $W^0$, i.e.\ within one block and region. Block changes go through refresh or Finny.
+\end{remark}
+
+\begin{theorem}[T24: source selection never worse; hybrid correct]\label{thm:t24}
+Let $\mathrm{Src}$ be the six sources refresh, finny, hybrid, woodbury, ancestor and finnyMirror, and let $\mathrm{SF}=\{\text{refresh},\text{finny},\text{hybrid}\}\subseteq\mathrm{Src}$.
+(a)~For finite $C_1\subseteq C_2$ with $C_1\neq\emptyset$ and any $f$ into a linear order, $\min_{C_2}f\le\min_{C_1}f$.
+In particular, for every $\mathrm{cost}:\mathrm{Src}\to\N\cup\{\top\}$ (or into any linear order), $\min_{\mathrm{Src}}\mathrm{cost}\le\min_{\mathrm{SF}}\mathrm{cost}$.
+With two cost functions, if $\mathrm{cost}_V(s)\le\mathrm{cost}_{SF}(s)$ for $s\in\mathrm{SF}$, then $\min_{\mathrm{Src}}\mathrm{cost}_V\le\min_{\mathrm{SF}}\mathrm{cost}_{SF}$.
+(b)~For all $b,W,W',S,S_{\text{prev}},C_{\text{old}},C_{\text{new}},T,T'$:
+\begin{multline*}
+\accS(b,W',S)+T'=(\accS(b,W,S_{\text{prev}})+T)
+-\big(\accS(b,W,C_{\text{old}})+\textstyle\sum_{S_{\text{prev}}\setminus C_{\text{old}}}W-\sum_{C_{\text{old}}\setminus S_{\text{prev}}}W\big)\\
++\big(\accS(b,W',C_{\text{new}})+\textstyle\sum_{S\setminus C_{\text{new}}}W'-\sum_{C_{\text{new}}\setminus S}W'\big)+(T'-T),
+\end{multline*}
+together with the same identity in Stockfish's implementation order (fix-ups applied to $\mathit{prev}-\mathit{cache}_{\text{old}}+\mathit{cache}_{\text{new}}$ in one pass), and its instance at $\Zm{16}$.
+\leanref{\lnm{inf'_superset}, \lnm{never_worse}, \lnm{never_worse_general}, \lnm{never_worse_dominated}, \lnm{hybrid_correct}, \lnm{hybrid_correct_impl}, \lnm{hybrid_correct_zmod}, \lnm{refresh_accS_any_source}}
+\end{theorem}
+\noindent The never-worse statement is pure monotonicity of the minimum, and its content lies entirely in its \emph{modelling assumptions}, which the Lean docstrings make explicit.
+(i)~Either one cost function is shared by both engines, or per-source dominance holds (\texttt{never\_worse\_dominated}). Neither is automatic, because VNNUE may use merged or factored tables, pays the C2$'$ readout tax, and may hold different cache contents.
+(ii)~The overhead of computing the candidate costs is excluded.
+(iii)~Only the FT-column part is covered, and PSI adds its own term (T25).
+The specification's \texttt{deriving Fintype} for $\mathrm{Src}$ does not elaborate in this toolchain, so the Lean development lists the six constructors by hand and checks $|\mathrm{Src}|=6$ by \texttt{decide}. No statement is affected.
+
+\subsection{Complexity (module \texttt{Complexity})}
+
+\begin{theorem}[T25: PSI overhead and king-event total]\label{thm:t25}
+For naturals $k,L,e,\mathrm{cost}_N$ with $4kL\le\mathrm{cost}_N$:
+(a)~$4L(\mathrm{cost}_N+ke)\le(4L+e)\,\mathrm{cost}_N$; if $L>0$, then $ke/\mathrm{cost}_N\le e/(4L)$ as reals;
+with $e=192$, $L=1024$: $1000(\mathrm{cost}_N+192k)\le1047\,\mathrm{cost}_N$, i.e.\ at most 4.7\% (exactly $192/4096=4.6875\%$).
+(b)~For candidate sets $C_1\subseteq C_2$ with $C_1$ nonempty and any $f:\iota\to\N$, $\min_{C_2}f+ke\le\min_{C_1}f+ke$.
+\leanref{\lnm{psi_overhead}, \lnm{psi_overhead_ratio}, \lnm{psi_overhead_instance}, \lnm{psi_overhead_instance_exact}, \lnm{king_event_total} (helper \lnm{inf'_superset_cx})}
+\end{theorem}
+\noindent The hypothesis $4kL\le\mathrm{cost}_N$ says that NNUE streams at least $k$ columns per perspective for both perspectives.
+Here $e$ is a modelling choice: the bytes of PSI traffic charged per changed absolute feature.
+We use $e=6r$ (the widths of the $r$ int16 lanes of $P1$ and $r$ int32 lanes of $P2$, $2r+4r$ bytes), so $r=32$ gives $e=192$; if $V$ is stored as int8 and $V^{\circ2}$ as int16, the weight columns are only $3r$ bytes, so $6r$ is conservative for column traffic.
+T25 compares only against NNUE's \emph{column} bytes.
+It says nothing about ratios that include accumulator passes: those must also charge PSI its own state pass (load and store of $P1,P2$, $2\cdot6r=12r=384$\,B per make), which our E2 byte model omits (Section~\ref{sec:e2}).
+
+\begin{theorem}[A1: ski-rental materialization]\label{thm:a1}
+Let $\mathrm{alg}(B,n)=n$ if $n<B$, else $2B-1$, and $\mathrm{algT}(B,t,n)=n$ if $n\le t$, else $t+B$. For $B\ge1$: $B\cdot\mathrm{alg}(B,n)\le(2B-1)\min(n,B)$ for every $n$, and for every threshold $t$, $(2B-1)\min(t+1,B)\le B\cdot\mathrm{algT}(B,t,t+1)$.
+\leanref{\lnm{ski_upper}, \lnm{ski_lower}}
+\end{theorem}
+\noindent This is the classical rent-or-buy (ski-rental) bound~\cite{karlin1988}, in its discrete $(2-1/B)$ form~\cite{borodin1998}, applied to the only genuinely online decision: whether to materialize an intermediate accumulator.
+
+\begin{theorem}[A2: fused-pass traffic]\label{thm:a2}
+For per-ply column counts $ks$ (length $t\ge1$), $k_{\text{net}}\le\sum ks$, column cost $c$ and pass cost $2a$:
+$k_{\text{net}}c+2a+2a(t-1)\le\sum_j(k_jc+2a)$, and therefore $k_{\text{net}}c+2a\le\sum_j(k_jc+2a)$.
+\leanref{\lnm{fused_traffic}, \lnm{fused_one_pass} (helper \lnm{sum_map_traffic_cx})}
+\end{theorem}
+
+\subsection{What the formalization did and did not establish}\label{sec:formal-scope}
+
+The formalization covers the \emph{algebra} of updates and range arguments over abstract index sets.
+It does not model chess move generation, the K32H3 index map, the threat feature set, SIMD code, or Python or C++ implementations.
+The link between theorems and code is the empirical bit-exactness test E1 (Section~\ref{sec:e1}).
+During design and formalization, several statements in earlier drafts were found to be false and were corrected. The Lean versions encode the corrections, and several of the counterexamples are themselves theorems:
+the \texttt{valMinAbs} window (T7d),
+the degree-3 range lacking $p_2,p_3$ hypotheses (T16b),
+``$V=I$ gives every diagonal-core table'' (replaced by T17),
+``NNUE's first layer is affine in $\beta$'' (restated as T18c/d),
+``never worse than Stockfish'' with Stockfish's set lacking hybrid (T24 includes hybrid),
+the isotypic ``no arithmetic'' claim (T22: one negation pass),
+and the expressiveness reading of low-rank king buckets (T23, \texttt{lowrank\_proper}).
+These were errors in our own specification, caught before implementation; they are not findings about NNUE or Stockfish.
+Several PSI-related links are also informal: the int32 bias $b^z$ and the $\Zm{32}$ wrapping of $P2$ (Section~\ref{sec:arch}), the degree-3 divisibility for the binary-weighted state and the $|P_k|$ hypotheses of T16(b), and the composition of T18(a)--(b) into whole-network equality.
+

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "VNNUE: Very Easily Updatable Neural Networks — An Exact, Formally Verified Update Calculus and a Power-Sum Interaction Channel for Chess Evaluation"
+authors:
+  - alias: HelloTest006
+version: 1.0.0
+date-released: 2026-11-10
+repository-code: "https://github.com/HelloTest006/vnnue"
+license: MIT
+keywords:
+  - NNUE
+  - chess engines
+  - incremental computation
+  - Lean 4
+  - formal verification
+  - factorization machines
+  - quantization
