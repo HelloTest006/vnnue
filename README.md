@@ -2,7 +2,7 @@
 
 **An exact, formally verified update calculus and a power-sum interaction channel for chess evaluation.**
 
-📄 Paper: [`paper/vnnue.pdf`](paper/vnnue.pdf) (36 pages)
+📄 Paper: [`paper/vnnue.pdf`](paper/vnnue.pdf) (36 pages) · 🌐 Web edition: <https://hellotest006.github.io/vnnue/> (source in [`docs/`](docs/), built by `paper/modal_html.py` + `web/build_web.py`)
 
 NNUE made neural evaluation affordable inside alpha-beta chess engines by updating the first layer incrementally on every move. This project treats that mechanism as an algebraic object. For a fixed weight table, the first layer is a group homomorphism ℤᴺ → (ℤ/2¹⁶)ᴸ. Incremental updates, Finny-table refreshes, Stockfish's hybrid king update, lazy catch-up and wrap-around integer arithmetic are all correct because of identities of that homomorphism. The project makes those identities explicit, machine-checks them in Lean 4, and uses them to design **VNNUE**, a proposed extension of Stockfish's K32H3 network. VNNUE adds:
 

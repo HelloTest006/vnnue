@@ -23,3 +23,6 @@ paper/*.toc
 
 # arXiv bundle is attached to GitHub releases instead
 arxiv/
+
+# TeX4ht intermediate output (regenerate with paper/modal_html.py)
+web/raw/
